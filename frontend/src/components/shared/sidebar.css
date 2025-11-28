@@ -1,0 +1,201 @@
+/* SIDEBAR CONTAINER */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #101014; /* darker charcoal */
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 12px 16px;
+  transition: width 0.25s ease;
+  overflow: hidden;
+  box-shadow: 3px 0 10px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* TOGGLE: absolute so it never reflows */
+.toggle-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* HEADER with centered logo (separate from toggle) */
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* reserve space so layout below doesn't jump */
+  min-height: 150px;
+  margin-top: 8px; /* leaves room for toggle visually */
+}
+
+/* Large centered logo when expanded */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hcdc-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 6px;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+
+.logo-text {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* Small centered logo when collapsed */
+.logo-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 80px; 
+}
+
+.hcdc-logo-small {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+
+/* USER INFO - hidden in collapsed */
+.user-info {
+  margin: 12px 0 6px 0;
+  text-align: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.user-info h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.user-info p {
+  margin: 4px 0 0 0;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+/* MENU LIST - separate block */
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.menu li {
+  margin: 0;
+}
+
+.menu-link,
+.logout-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+  background: #26263b;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+/* hover = MAROON */
+.menu-link:hover,
+.logout-item:hover {
+  background: #7a0019;
+  transform: translateX(4px);
+}
+
+/* active state */
+.menu li.active .menu-link {
+  background: #a40022;
+}
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: #ffffff;
+  margin: 12px 0;
+  opacity: 0.2;
+}
+
+/* icon */
+.icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: white;
+  transition: width 0.25s ease, height 0.25s ease;
+
+}
+
+
+
+/* labels hidden in collapsed */
+.sidebar.collapsed .label {
+  display: none;
+}
+
+/* center small icons when collapsed (improves perceived placement) */
+.sidebar.collapsed .menu-link,
+.sidebar.collapsed .logout-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* make collapsed icons slightly larger */
+.sidebar.collapsed .icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* keep spacing so menu doesn't jump when toggled */
+.menu {
+  transition: padding-top 0.25s ease;
+}
+
+/* responsive tweak */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+  .sidebar.collapsed {
+    width: 64px;
+  }
+}
