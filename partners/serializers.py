@@ -14,9 +14,13 @@ class PartnershipActivitySerializer(serializers.ModelSerializer):
 
 
 class PartnerSerializer(serializers.ModelSerializer):
-    contacts = PartnerContactSerializer(many=True, read_only=True)
-    activities = PartnershipActivitySerializer(many=True, read_only=True)
-
     class Meta:
         model = Partner
-        fields = "__all__"
+        fields = [
+            'id', 'company1', 'college1', 'company2', 'college2',
+            'contact1_name', 'contact1_email', 'contact1_phone',
+            'contact2_name', 'contact2_email', 'contact2_phone',
+            'effectivity_start', 'effectivity_end', 'status',
+            'created_at', 'updated_at'
+        ]
+

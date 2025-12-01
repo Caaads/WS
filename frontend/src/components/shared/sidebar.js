@@ -7,8 +7,7 @@ import {
   ChartColumnBig,
   Handshake,
   School,
-  FileChartColumn,
-  Settings,
+  Users,
   LogOut
 } from "lucide-react";
 
@@ -40,8 +39,7 @@ export default function Sidebar() {
     { name: "Dashboard", path: "/dashboard", icon: <ChartColumnBig /> },
     { name: "Partnerships", path: "/partnerships", icon: <Handshake /> },
     { name: "Colleges", path: "/colleges", icon: <School /> },
-    { name: "Reports", path: "/reports", icon: <FileChartColumn /> },
-    { name: "Settings", path: "/settings", icon: <Settings /> }
+    { name: "Contact", path: "/contact", icon: <Users /> }
   ];
 
   return (

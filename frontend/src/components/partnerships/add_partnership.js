@@ -1,19 +1,25 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../shared/sidebar";
 import axiosInstance from "../../api/axiosConfig";
+import { ArrowLeft } from "lucide-react";
 import "./add_partnership.css";
 
+
 const AddPartnership = () => {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    name: "",
-    category: "school",
-    department: "",
-    address: "",
-    website: "",
-    email: "",
-    phone: "",
-    contact_person: "",
-    contact_position: "",
+    company1: "",
+    company2: "",
+    college1: "",
+    college2: "",
+    contact1_name: "",
+    contact1_email: "",
+    contact1_phone: "",
+    contact2_name: "",
+    contact2_email: "",
+    contact2_phone: "",
     effectivity_start: "",
     effectivity_end: "",
     status: "pending",
@@ -28,7 +34,7 @@ const AddPartnership = () => {
 
     axiosInstance
       .post("/partners/", form)
-      .then(() => (window.location.href = "/partnerships"))
+      .then(() => navigate("/partnerships"))
       .catch((err) => console.log(err));
   };
 
@@ -36,62 +42,151 @@ const AddPartnership = () => {
     <div className="page-container">
       <Sidebar />
       <div className="content">
-        <h1>Add Partnership</h1>
+        <h1>Create New Partnership</h1>
 
         <form className="form-card" onSubmit={handleSubmit}>
+        <div className="top-row">
+          <button className="btn-back" type="button" onClick={() => navigate(-1)}>
+            <ArrowLeft size={16} />
+            Back
+          </button>
+        </div>
+
+
+          {/* ===================== PARTNER ORGS ===================== */}
+          <h2 className="section-title">Partner Organizations</h2>
+
           <div className="form-grid">
-            <input name="name" onChange={handleChange} placeholder="Partner Name" required />
-
-            <select name="category" onChange={handleChange}>
-              <option value="school">School</option>
-              <option value="government">Government</option>
-              <option value="ngo">NGO</option>
-              <option value="company">Private Company</option>
-            </select>
-
             <input
-              name="department"
+              name="company1"
+              value={form.company1}
               onChange={handleChange}
-              placeholder="Department"
-              required
-            />
-
-            <input name="address" onChange={handleChange} placeholder="Address" required />
-
-            <input name="website" onChange={handleChange} placeholder="Website (optional)" />
-
-            <input name="email" onChange={handleChange} placeholder="Email" required />
-
-            <input name="phone" onChange={handleChange} placeholder="Phone" required />
-
-            <input
-              name="contact_person"
-              onChange={handleChange}
-              placeholder="Contact Person"
+              placeholder="Company / Department 1"
               required
             />
 
             <input
-              name="contact_position"
+              name="company2"
+              value={form.company2}
               onChange={handleChange}
-              placeholder="Contact Position"
-              required
+              placeholder="Company / Department 2 (Optional)"
             />
-
-            <label>Start Date</label>
-            <input type="date" name="effectivity_start" onChange={handleChange} required />
-
-            <label>End Date</label>
-            <input type="date" name="effectivity_end" onChange={handleChange} required />
-
-            <select name="status" onChange={handleChange}>
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="expired">Expired</option>
-            </select>
           </div>
 
-          <button type="submit" className="btn-save">Save Partnership</button>
+          {/* ===================== COURSES INVOLVED ===================== */}
+          <h2 className="section-title">Courses Involved (Optional)</h2>
+
+          <div className="form-grid">
+            <input
+              name="college1"
+              value={form.college1}
+              onChange={handleChange}
+              placeholder="Course / Program 1"
+            />
+
+            <input
+              name="college2"
+              value={form.college2}
+              onChange={handleChange}
+              placeholder="Course / Program 2 (Optional)"
+            />
+          </div>
+
+          {/* ===================== CONTACT PERSON 1 ===================== */}
+          <h2 className="section-title">Contact Person 1</h2>
+
+          <div className="form-grid">
+            <input
+              name="contact1_name"
+              value={form.contact1_name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              required
+            />
+
+            <input
+              name="contact1_email"
+              value={form.contact1_email}
+              onChange={handleChange}
+              placeholder="Email Address"
+              required
+            />
+
+            <input
+              name="contact1_phone"
+              value={form.contact1_phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              required
+            />
+          </div>
+
+          {/* ===================== CONTACT PERSON 2 ===================== */}
+          <h2 className="section-title">Contact Person 2 (Optional)</h2>
+
+          <div className="form-grid">
+            <input
+              name="contact2_name"
+              value={form.contact2_name}
+              onChange={handleChange}
+              placeholder="Full Name"
+            />
+
+            <input
+              name="contact2_email"
+              value={form.contact2_email}
+              onChange={handleChange}
+              placeholder="Email Address"
+            />
+
+            <input
+              name="contact2_phone"
+              value={form.contact2_phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+            />
+          </div>
+
+          {/* ===================== EFFECTIVITY DATES ===================== */}
+          <h2 className="section-title">Effectivity Dates</h2>
+
+          <div className="date-row">
+            <div className="date-block">
+              <p className="date-label">Start Date</p>
+              <input
+                type="date"
+                name="effectivity_start"
+                value={form.effectivity_start}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="date-block">
+              <p className="date-label">End Date</p>
+              <input
+                type="date"
+                name="effectivity_end"
+                value={form.effectivity_end}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          {/* ===================== STATUS ===================== */}
+          <h2 className="section-title">Status</h2>
+
+          <select name="status" value={form.status} onChange={handleChange}>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="expired">Expired</option>
+          </select>
+
+          {/* ===================== SAVE ===================== */}
+          <button type="submit" className="btn-save">
+            Save Partnership
+          </button>
         </form>
       </div>
     </div>

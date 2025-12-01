@@ -1,57 +1,43 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../shared/sidebar";
-import Table from "./table";
+import Table from "../shared/table";
+import axiosInstance from "../../api/axiosConfig";
+import { formatDatePretty } from "../shared/datepretty";
 import "./partnerships.css";
 
 const Partnerships = () => {
-  // ---------------------------
-  // MOCK DATA FOR DEMO
-  // ---------------------------
-  const mockPartners = [
-    {
-      id: 1,
-      name: "InfoSoft",
-      category: "CET - BSIT",
-      effectivity_start: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2023-06-01")),
-      effectivity_end: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2025-12-01")),
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Dusit",
-      category: "CHATME - BSHM",
-      effectivity_start: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2020-01-10")),
-      effectivity_end: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2024-01-10")),
-      status: "Expired",
-    },
-    {
-      id: 3,
-      name: "Smart",
-      category: "CET - CPE",
-      effectivity_start: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2022-03-14")),
-      effectivity_end: new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date("2026-12-14")),
-      status: "Active",
-    },
-  ];
+  const [partners, setPartners] = useState([]);
+  const [selectedPartner, setSelectedPartner] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // ---------------------------
-  // STATE
-  // ---------------------------
-  const [partners, setPartners] = useState(mockPartners); // <-- use mock data for demo
-
-  // Uncomment if you want to fetch from API later
-  /*
   useEffect(() => {
-    axiosInstance
-      .get("/partners/")
+    axiosInstance.get("/partners/")
       .then((res) => setPartners(res.data))
-      .catch((err) => console.log(err));
+      .catch(console.log);
   }, []);
-  */
+
+  const handleDelete = (id) => {
+    if (!window.confirm("Are you sure you want to delete this partner?")) return;
+    axiosInstance.delete(`/partners/${id}/`)
+      .then(() => setPartners((prev) => prev.filter((p) => p.id !== id)))
+      .catch(console.log);
+  };
+
+  const openModal = (partner) => {
+    setSelectedPartner(partner);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setSelectedPartner(null);
+    setShowModal(false);
+  };
 
   const columns = [
-    { header: "Company/Department 1", accessor: "name" },
-    { header: "Company/Department 2", accessor: "category" },
+    { header: "Company/Department 1", accessor: "company1" },
+    { header: "Company/Department 2", accessor: "company2" },
+    { header: "Course 1", accessor: "college1" },
+    { header: "Course 2", accessor: "college2" },
     {
       header: "Status",
       accessor: "status",
@@ -61,53 +47,56 @@ const Partnerships = () => {
         </span>
       ),
     },
-    { header: "Start", accessor: "effectivity_start" },
-    { header: "End", accessor: "effectivity_end" },
     {
       header: "Actions",
       accessor: "actions",
       render: (row) => (
         <div className="actions">
-          <a href={`/view-partnership/${row.id}`} className="view-btn">
-            View
-          </a>
-          <a href={`/edit-partnership/${row.id}`} className="edit-btn">
-            Edit
-          </a>
-<a
-  onClick={() => handleDelete(row.id)}
-  className="delete-btn"
-  href="#!"
->
-  Delete
-</a>
-
+          <button className="view-btn" onClick={() => openModal(row)}>View</button>
+          <a href={`/edit-partnership/${row.id}`} className="edit-btn">Edit</a>
+          <button onClick={() => handleDelete(row.id)} className="delete-btn">Delete</button>
         </div>
       ),
     },
   ];
-
-  // ---------------------------
-  // DELETE HANDLER
-  // ---------------------------
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this partner?")) return;
-    setPartners((prev) => prev.filter((p) => p.id !== id));
-  };
 
   return (
     <div className="page-container">
       <Sidebar />
       <div className="content">
         <h1>Partnerships</h1>
-
         <div className="btn-container">
-          <a href="/add-partnership" className="btn-add">
-            + Add Partnership
-          </a>
+          <a href="/add-partnership" className="btn-add">+ Add Partnership</a>
         </div>
 
         <Table data={partners} columns={columns} />
+
+        {/* ======= Modal ======= */}
+        {showModal && selectedPartner && (
+          <div className="modal-backdrop" onClick={closeModal}>
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+              <h2 className="modal-title">{selectedPartner.company1} {selectedPartner.company2 ? `/ ${selectedPartner.company2}` : ""}</h2>
+
+              <div className="modal-section">
+                <p><strong>Courses:</strong> {selectedPartner.college1 || "N/A"} {selectedPartner.college2 ? `, ${selectedPartner.college2}` : ""}</p>
+              </div>
+
+              <div className="modal-section">
+                <p><strong>Contact 1:</strong> {selectedPartner.contact1_name} | {selectedPartner.contact1_email} | {selectedPartner.contact1_phone}</p>
+                {selectedPartner.contact2_name && (
+                  <p><strong>Contact 2:</strong> {selectedPartner.contact2_name} | {selectedPartner.contact2_email} | {selectedPartner.contact2_phone}</p>
+                )}
+              </div>
+
+              <div className="modal-section">
+                <p><strong>Effectivity:</strong> {formatDatePretty(selectedPartner.effectivity_start)} → {formatDatePretty(selectedPartner.effectivity_end)}</p>
+                <p><strong>Status:</strong> <span className={`status ${selectedPartner.status.toLowerCase()}`}>{selectedPartner.status}</span></p>
+              </div>
+
+              <button className="btn-close" onClick={closeModal}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

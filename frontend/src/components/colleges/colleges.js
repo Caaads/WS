@@ -1,53 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../shared/sidebar";
-import Table from "../partnerships/table"; // Reuse the same Table component
-import "./colleges.css"; // We'll create this next
+import Table from "../shared/table";
+import axiosInstance from "../../api/axiosConfig";
+import "./colleges.css";
 
 const Colleges = () => {
-  // ---------------------------
-  // MOCK DATA FOR DEMO
-  // ---------------------------
-  const mockColleges = [
-    {
-      id: 1,
-      college: "CET - BSIT",
-      partners: "InfoSoft, Smart",
-      status: "Active",
-    },
-    {
-      id: 2,
-      college: "CHATME - BSHM",
-      partners: "Dusit",
-      status: "Expired",
-    },
-    {
-      id: 3,
-      college: "CET - CPE",
-      partners: "Smart, InfoSoft",
-      status: "Active",
-    },
-    {
-      id: 4,
-      college: "CET - BLIS",
-      partners: "InfoSoft",
-      status: "Pending",
-    },
-  ];
+  const [colleges, setColleges] = useState([]);
 
-  const [colleges, setColleges] = useState(mockColleges);
+  useEffect(() => {
+    axiosInstance
+      .get("/all_colleges_api/")
+      .then((res) => setColleges(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleDelete = (id) => {
+    if (!window.confirm("Are you sure you want to delete this college?")) return;
+    // Add API call here if needed
+    setColleges((prev) => prev.filter((c) => c.id !== id));
+  };
 
   const columns = [
     { header: "College", accessor: "college" },
     { header: "Partner Companies", accessor: "partners" },
-    {
-      header: "Status",
-      accessor: "status",
-      render: (row) => (
-        <span className={`status ${row.status.toLowerCase()}`}>
-          {row.status}
-        </span>
-      ),
-    },
     {
       header: "Actions",
       accessor: "actions",
@@ -70,26 +45,11 @@ const Colleges = () => {
     },
   ];
 
-  // ---------------------------
-  // DELETE HANDLER
-  // ---------------------------
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this college?")) return;
-    setColleges((prev) => prev.filter((c) => c.id !== id));
-  };
-
   return (
     <div className="page-container">
       <Sidebar />
       <div className="content">
         <h1>Colleges</h1>
-
-        <div className="btn-container">
-          <a href="/add-college" className="btn-add">
-            + Add College
-          </a>
-        </div>
-
         <Table data={colleges} columns={columns} />
       </div>
     </div>

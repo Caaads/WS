@@ -74,44 +74,24 @@ class Department(models.Model):
 # Partner (Institution)
 # =====================================================
 class Partner(models.Model):
-    CATEGORY_CHOICES = (
-        ("school", "School"),
-        ("government", "Government Agency"),
-        ("ngo", "NGO"),
-        ("company", "Private Company"),
-        ("other", "Other"),
-    )
+    company1 = models.CharField(max_length=255)
+    college1 = models.CharField(max_length=255, blank=True, null=True)  # new optional field
+    company2 = models.CharField(max_length=255, blank=True, null=True)
+    college2 = models.CharField(max_length=255, blank=True, null=True)  # new optional field
 
-    STATUS_CHOICES = (
-        ("active", "Active"),
-        ("pending", "Pending"),
-        ("expired", "Expired"),
-    )
-
-    name = models.CharField(max_length=255)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default="school")
-
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-
-    address = models.TextField()
-    website = models.URLField(blank=True, null=True)
-
-    email = models.EmailField()
-    phone = models.CharField(max_length=50)
-
-    contact_person = models.CharField(max_length=255)
-    contact_position = models.CharField(max_length=255)
-
+    # existing fields...
+    contact1_name = models.CharField(max_length=255)
+    contact1_email = models.EmailField()
+    contact1_phone = models.CharField(max_length=50, default="0000000000")
+    contact2_name = models.CharField(max_length=255, blank=True, null=True)
+    contact2_email = models.EmailField(blank=True, null=True)
+    contact2_phone = models.CharField(max_length=50, blank=True, null=True)
     effectivity_start = models.DateField()
     effectivity_end = models.DateField()
-
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")
-
+    status = models.CharField(max_length=50, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
 
 
 # =====================================================

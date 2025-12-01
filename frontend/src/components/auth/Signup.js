@@ -78,15 +78,20 @@ const Signup = () => {
               />
             </div>
 
-            <div className="input-group">
-              <Briefcase className="input-icon" />
-              <input
-                type="text"
-                placeholder="Position"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-              />
-            </div>
+<div className="input-group">
+  <Briefcase className="input-icon" />
+  <select
+    value={position}
+    onChange={(e) => setPosition(e.target.value)}
+    required
+  >
+    <option value="">Select User Role</option>
+    <option value="superadmin">Superadmin (OSA Host)</option>
+    <option value="college_admin">College Admin</option>
+    <option value="department_admin">Department Admin</option>
+  </select>
+</div>
+
 
             <div className="input-group">
               <Lock className="input-icon" />

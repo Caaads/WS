@@ -1,11 +1,13 @@
 from rest_framework import viewsets
 from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
-from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import json
-from rest_framework.permissions import IsAuthenticated
+from .models import Department, Partner
 
 from .models import Partner, PartnerContact, PartnershipActivity, User
 from .serializers import (
@@ -57,7 +59,6 @@ def current_user(request):
             "id": request.user.id,
             "email": request.user.email,
             "fullname": getattr(request.user, "fullname", ""),
-            "role": request.user.role,
             "position": getattr(request.user, "position", "")
         })
     return JsonResponse({"error": "Not logged in"}, status=401)
@@ -66,26 +67,21 @@ def current_user(request):
 # =====================================================
 # SIGNUP
 # =====================================================
-@csrf_exempt     # we intentionally exempt this (login/signup)
+@csrf_exempt
 def signup_view(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
-
     try:
         data = json.loads(request.body)
-
         if User.objects.filter(email=data.get("email")).exists():
             return JsonResponse({"success": False, "error": "User already exists"})
-
         User.objects.create_user(
             email=data.get("email"),
             password=data.get("password"),
             fullname=data.get("fullname", ""),
             position=data.get("position", "")
         )
-
         return JsonResponse({"success": True})
-
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)})
 
@@ -93,20 +89,17 @@ def signup_view(request):
 # =====================================================
 # LOGIN
 # =====================================================
-@csrf_exempt     # login doesn't require CSRF
+@csrf_exempt
 def login_view(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
-
     try:
         data = json.loads(request.body)
-
         user = authenticate(
             request,
             username=data.get("email"),
             password=data.get("password")
         )
-
         if user:
             login(request, user)
             return JsonResponse({
@@ -114,12 +107,9 @@ def login_view(request):
                 "id": user.id,
                 "email": user.email,
                 "fullname": user.fullname,
-                "role": user.role,
                 "position": getattr(user, "position", "")
             })
-
         return JsonResponse({"success": False, "error": "Invalid credentials"})
-
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)})
 
@@ -127,8 +117,78 @@ def login_view(request):
 # =====================================================
 # LOGOUT
 # =====================================================
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@csrf_exempt
 def logout_view(request):
-    request.user.auth_token.delete()  # if using token auth
-    return Response({"detail": "Successfully logged out"})
+    if request.method == "GET":
+        logout(request)
+        return JsonResponse({"success": True, "message": "Logged out"}, status=200)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
+
+
+# =====================================================
+# BROWSER-FRIENDLY PARTNERSHIP PAGE
+# =====================================================
+def all_partners_page(request):
+    """
+    View to see all partnerships in a simple HTML table in the browser.
+    """
+    partners = Partner.objects.all().order_by("-created_at")
+    return render(request, 'partners/all_partners.html', {'partners': partners})
+
+
+# =====================================================
+# SIMPLE JSON API FOR FRONTEND CHECK
+# =====================================================
+@api_view(['GET'])
+def all_partners_api(request):
+    partners = Partner.objects.all().order_by("-created_at")
+    serializer = PartnerSerializer(partners, many=True)
+    return Response(serializer.data)
+
+# Browser-friendly page for testing CRUD
+def all_partners_page(request):
+    partners = Partner.objects.all().order_by("-created_at")
+    return render(request, "partners/all_partners.html", {"partners": partners})
+
+# =====================================================
+# GET ALL COLLEGES WITH PARTNERS
+# =====================================================
+def all_colleges_api(request):
+    """
+    Returns all colleges with their associated partners.
+    Example output:
+    [
+        {
+            "id": 1,
+            "college": "CET - IT",
+            "partners": "JairoSoft and Dusit"
+        },
+        {
+            "id": 2,
+            "college": "CHATME",
+            "partners": "Smart"
+        }
+    ]
+    """
+    colleges = Department.objects.all()
+    result = []
+
+    for college in colleges:
+        partners_qs = Partner.objects.filter(category=college.name)  # category stores college name
+        partners_names = [p.company1 for p in partners_qs]
+        # Combine partners with 'and' if more than one
+        if len(partners_names) > 1:
+            partners_str = " and ".join(partners_names)
+        elif partners_names:
+            partners_str = partners_names[0]
+        else:
+            partners_str = ""  # no partners yet
+
+        result.append({
+            "id": college.id,
+            "college": college.name,
+            "partners": partners_str,
+        })
+
+    return JsonResponse(result, safe=False)
