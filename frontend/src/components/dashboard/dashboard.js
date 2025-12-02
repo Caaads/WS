@@ -1,78 +1,43 @@
-import React, { useState } from "react";
+import React from "react";
 import Sidebar from "../shared/sidebar";
+import Navbar from "../shared/navbar";
 import "./dashboard.css";
 
 export default function Dashboard() {
-  // mock data for demo — replace with API fetch later
-  const partnerships = [
-    {
-      id: 1,
-      dept1: "CET - BSIT",
-      dept2: "InfoSoft",
-      start: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2023-06-01')),
-      end: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2025-12-01')),
-      status: "Active"
-    },
-    {
-      id: 2,
-      dept1: "CHATME - BSHM",
-      dept2: "Dusit",
-      start: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2020-01-10')),
-      end: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2024-01-10')),
-      status: "Expired"
-    },
-    {
-      id: 3,
-      dept1: "CET - CPE",
-      dept2: "Smart",
-      start: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2022-03-14')),
-      end: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date('2026-12-14')),
-      status: "Active"
-    }
-  ];
-
-  const total = partnerships.length;
-  const active = partnerships.filter(p => p.status === "Active").length;
-  const expired = partnerships.filter(p => p.status === "Expired").length;
-
-  const expiringSoon = partnerships.filter(p => {
-    const due = new Date(p.end);
-    const today = new Date();
-    const diff = (due - today) / (1000 * 60 * 60 * 24);
-    return diff > 0 && diff <= 60; // 60 days
-  }).length;
-
   return (
     <div className="dashboard-container">
+      <Navbar />
       <Sidebar />
-
       <div className="content">
-        <h1>Dashboard</h1>
+        {/* Add top margin to avoid overlap with navbar */}
+        <div className="page-header">
+          <h1>Dashboard</h1>
+        </div>
 
-        {/* STAT CARDS */}
+        {/* STAT CARDS - ready for dynamic data */}
         <div className="cards-row">
           <div className="card">
             <h3>Total Partnerships</h3>
-            <p>{total}</p>
+            <p>0</p>
           </div>
 
           <div className="card">
             <h3>Active Partnerships</h3>
-            <p>{active}</p>
+            <p>0</p>
           </div>
 
           <div className="card">
             <h3>Expiring Soon</h3>
-            <p>{expiringSoon}</p>
+            <p>0</p>
           </div>
 
           <div className="card">
             <h3>Expired</h3>
-            <p>{expired}</p>
+            <p>0</p>
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* TABLE - ready for dynamic data */}
         <div className="table-container">
           <table className="dash-table">
             <thead>
@@ -85,35 +50,15 @@ export default function Dashboard() {
                 <th>Action</th>
               </tr>
             </thead>
-
             <tbody>
-              {partnerships.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.dept1}</td>
-                  <td>{p.dept2}</td>
-                  <td>{p.start}</td>
-                  <td>{p.end}</td>
-                  <td>
-                    <span
-                      className={
-                        p.status === "Active"
-                          ? "status active"
-                          : "status expired"
-                      }
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="view-btn">View</button>
-                    <button className="edit-btn">Edit</button>
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                  No data available
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );

@@ -181,6 +181,11 @@ h1 {
 .edit-btn:hover {
   background: #5c0013;
 }
+/* Move page header down so navbar doesn't overlap */
+.page-header {
+  margin-top: 80px; /* adjust this based on your navbar height */
+}
+
 
 /* ===========================
    RESPONSIVE

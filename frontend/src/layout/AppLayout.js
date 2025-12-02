@@ -1,15 +1,16 @@
-import React from "react";
-import Sidebar from "../components/shared/sidebar";
-import { Outlet } from "react-router-dom";
+import React, { useState } from "react";
 
-export default function AppLayout() {
+import Navbar from "../components/shared/navbar";
+
+export default function AppLayout({ children }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <div style={{ display: "flex" }}>
-      <Sidebar />
-
-      <div style={{ flex: 1, marginLeft: "220px", padding: "20px" }}>
-        <Outlet />
-      </div>
-    </div>
+<div className="app-layout">
+  <div className={`main-content ${collapsed ? "collapsed" : ""}`}>
+    <Navbar />
+    <div className="page-content">{children}</div>
+  </div>
+</div>
   );
 }

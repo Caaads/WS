@@ -7,7 +7,8 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import json
-from .models import Department, Partner
+from .models import Department, Partner, College
+from .serializers import CollegeSerializer, DepartmentSerializer
 
 from .models import Partner, PartnerContact, PartnershipActivity, User
 from .serializers import (
@@ -58,10 +59,13 @@ def current_user(request):
         return JsonResponse({
             "id": request.user.id,
             "email": request.user.email,
-            "fullname": getattr(request.user, "fullname", ""),
-            "position": getattr(request.user, "position", "")
+            "fullname": request.user.fullname,
+            "role": request.user.role,
+            "college": request.user.college.name if request.user.college else None,
+            "department": request.user.department.name if request.user.department else None,
         })
     return JsonResponse({"error": "Not logged in"}, status=401)
+
 
 
 # =====================================================
@@ -71,19 +75,34 @@ def current_user(request):
 def signup_view(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "error": "Invalid method"}, status=400)
+
     try:
         data = json.loads(request.body)
+
         if User.objects.filter(email=data.get("email")).exists():
             return JsonResponse({"success": False, "error": "User already exists"})
+
+        college_id = data.get("college")
+        department_id = data.get("department")
+
+        college = College.objects.get(id=college_id) if college_id else None
+        department = Department.objects.get(id=department_id) if department_id else None
+
         User.objects.create_user(
             email=data.get("email"),
             password=data.get("password"),
             fullname=data.get("fullname", ""),
-            position=data.get("position", "")
-        )
+            role=data.get("role"),
+            college_id=data.get("college") or None,
+            department_id=data.get("department") or None,
+)
+
+
         return JsonResponse({"success": True})
+
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)})
+
 
 
 # =====================================================
@@ -192,3 +211,18 @@ def all_colleges_api(request):
         })
 
     return JsonResponse(result, safe=False)
+
+@api_view(['GET'])
+def get_colleges(request):
+    colleges = College.objects.all()
+    serializer = CollegeSerializer(colleges, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_courses(request):
+    college_id = request.GET.get('college_id')
+    if not college_id:
+        return Response([], status=200)
+    courses = Department.objects.filter(college_id=college_id)
+    serializer = DepartmentSerializer(courses, many=True)
+    return Response(serializer.data)

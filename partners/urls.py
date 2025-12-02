@@ -41,5 +41,6 @@ urlpatterns = [
     path("api/colleges/", views.all_colleges_api, name="colleges_api"),
     path("all_colleges_api/", views.all_colleges_api, name="all_colleges_api"),
 
-    
+    path('colleges/', views.get_colleges),
+    path('courses/', views.get_courses),
 ]

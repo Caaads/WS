@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../shared/sidebar";
 import Table from "../shared/table";
+import Navbar from "../shared/navbar";
 import axiosInstance from "../../api/axiosConfig";
 import "./colleges.css";
 
@@ -45,15 +46,21 @@ const Colleges = () => {
     },
   ];
 
-  return (
-    <div className="page-container">
-      <Sidebar />
-      <div className="content">
+return (
+  <div className="page-container">
+    <Navbar />
+    <Sidebar />
+    <div className="content">
+      {/* Add top margin to avoid overlap with navbar */}
+      <div className="page-header">
         <h1>Colleges</h1>
-        <Table data={colleges} columns={columns} />
       </div>
+
+      <Table data={colleges} columns={columns} />
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Colleges;

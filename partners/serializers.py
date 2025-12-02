@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Partner, PartnerContact, PartnershipActivity
+from .models import Partner, PartnerContact, PartnershipActivity, College, Department, User
 
 class PartnerContactSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,3 +24,26 @@ class PartnerSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
 
+class CollegeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = College
+        fields = ['id', 'name']
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['id', 'name', 'college']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'fullname', 'email', 'role', 'college', 'department', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        user = User(**validated_data)
+        if password:
+            user.set_password(password)
+        user.save()
+        return user

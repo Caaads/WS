@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AuthForm.css';
-import axios from "../../api/axiosConfig"; // make sure axiosConfig has baseURL and withCredentials
+import axios from "../../api/axiosConfig";
 import { User, Mail, Briefcase, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,25 +9,59 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [position, setPosition] = useState('');
   const [password, setPassword] = useState('');
+  const [college, setCollege] = useState('');
+  const [course, setCourse] = useState('');
+  const [collegesList, setCollegesList] = useState([]);
+  const [coursesList, setCoursesList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
   const navigate = useNavigate();
 
+  // Fetch all colleges on mount
+  useEffect(() => {
+    axios.get("/colleges/")
+      .then(res => setCollegesList(res.data))
+      .catch(err => console.log(err));
+  }, []);
+
+  // Fetch courses whenever college changes
+  useEffect(() => {
+    if (college) {
+      axios.get(`/courses/?college_id=${college}`)
+        .then(res => setCoursesList(res.data))
+        .catch(err => console.log(err));
+    } else {
+      setCoursesList([]);
+      setCourse('');
+    }
+  }, [college]);
+
   const handleSubmit = async (e) => {
-    e.preventDefault(); // prevent page reload
+    e.preventDefault();
     setLoading(true);
     setErrorMsg('');
 
+    // Build payload depending on role
+    const payload = {
+      fullname,
+      email,
+      password,
+      role: position,
+      college: position === 'superadmin' ? null : college || null,
+      department: position === 'department_admin' ? course || null : null,
+    };
+
     try {
       const response = await axios.post(
-        "signup/", 
-        { fullname, email, position, password },
+        "/signup/",
+        payload,
         { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );
 
       if (response.data.success) {
         alert("Signup successful! Redirecting to login...");
-        navigate("/login"); // redirect after successful signup
+        navigate("/login");
       } else {
         setErrorMsg(response.data.error || "Signup failed");
       }
@@ -78,20 +112,54 @@ const Signup = () => {
               />
             </div>
 
-<div className="input-group">
-  <Briefcase className="input-icon" />
-  <select
-    value={position}
-    onChange={(e) => setPosition(e.target.value)}
-    required
-  >
-    <option value="">Select User Role</option>
-    <option value="superadmin">Superadmin (OSA Host)</option>
-    <option value="college_admin">College Admin</option>
-    <option value="department_admin">Department Admin</option>
-  </select>
-</div>
+            <div className="input-group">
+              <Briefcase className="input-icon" />
+              <select
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
+                required
+              >
+                <option value="">Select User Role</option>
+                <option value="superadmin">Superadmin (OSA Host)</option>
+                <option value="college_admin">College Admin</option>
+                <option value="department_admin">Department Admin</option>
+              </select>
+            </div>
 
+            {/* College selection for College or Department Admin */}
+            {(position === 'college_admin' || position === 'department_admin') && (
+              <div className="input-group">
+                <Briefcase className="input-icon" />
+                <select
+                  value={college}
+                  onChange={(e) => setCollege(e.target.value)}
+                  required
+                >
+                  <option value="">Select College</option>
+                  {collegesList.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Course selection for Department Admin */}
+            {position === 'department_admin' && (
+              <div className="input-group">
+                <Briefcase className="input-icon" />
+                <select
+                  value={course}
+                  onChange={(e) => setCourse(e.target.value)}
+                  required
+                  disabled={!college}
+                >
+                  <option value="">Select Course</option>
+                  {coursesList.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="input-group">
               <Lock className="input-icon" />

@@ -257,6 +257,17 @@ tbody tr:hover {
 .btn-close:hover {
   background: #003f85;
 }
+.page-header {
+  margin-top: 80px; /* adjust based on navbar height */
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    margin-top: 100px; /* more space on mobile if navbar is taller */
+  }
+}
+
 
 /* Animations */
 @keyframes fadeIn {

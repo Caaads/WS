@@ -44,7 +44,8 @@ export default function Sidebar() {
 
   return (
     <div className={collapsed ? "sidebar collapsed" : "sidebar"}>
-      {/* toggle is absolutely positioned so it won't shift */}
+      
+      {/* toggle button */}
       <button
         className="toggle-btn"
         onClick={() => setCollapsed((c) => !c)}
@@ -53,32 +54,40 @@ export default function Sidebar() {
         <Menu />
       </button>
 
-      {/* header area contains only the logo (centered) */}
+      {/* header area */}
       <div className="sidebar-header">
+
+        {/* expanded sidebar */}
         {!collapsed && (
           <div className="logo-section">
             <img src="/hcdc_logo.png" alt="HCDC Logo" className="hcdc-logo" />
-            <div className="logo-text">OSA</div>
+
+            {/* user info directly under logo */}
+            {user && (
+              <div className="user-info under-logo">
+                <h3>{user.fullname}</h3>
+
+                <p>
+                  {user.role === "superadmin" && "Superadmin"}
+                  {user.role === "college_admin" && `${user.college} Admin`}
+                  {user.role === "department_admin" && `${user.department} Admin`}
+                </p>
+              </div>
+            )}
           </div>
         )}
-        {/* show a smaller centered logo when collapsed */}
+
+        {/* collapsed sidebar */}
         {collapsed && (
           <div className="logo-collapsed">
             <img src="/hcdc_logo.png" alt="HCDC Logo" className="hcdc-logo-small" />
           </div>
         )}
+
         <hr className="divider" />
       </div>
 
-      {/* user info (hidden in collapsed mode to save space) */}
-      {!collapsed && user && (
-        <div className="user-info">
-          <h3>{user.fullname}</h3>
-          <p>{user.position}</p>
-        </div>
-      )}
-
-      {/* menu separated below */}
+      {/* menu */}
       <ul className="menu">
         {navItems.map((item, i) => (
           <li key={i} className={location.pathname === item.path ? "active" : ""}>
@@ -89,12 +98,6 @@ export default function Sidebar() {
           </li>
         ))}
 
-        <li className="logout-item" onClick={handleLogout}>
-          <span className="icon">
-            <LogOut />
-          </span>
-          {!collapsed && <span className="label">Logout</span>}
-        </li>
       </ul>
     </div>
   );
