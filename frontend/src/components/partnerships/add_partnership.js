@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../shared/sidebar";
 import axiosInstance from "../../api/axiosConfig";
@@ -8,85 +8,77 @@ import "./add_partnership.css";
 const AddPartnership = () => {
   const navigate = useNavigate();
 
-  const [colleges, setColleges] = useState([]);
-  const [departments1, setDepartments1] = useState([]);
-  const [departments2, setDepartments2] = useState([]);
-
   const [form, setForm] = useState({
-    company1: "",
-    company2: "",
-    college1: "",
-    college2: "",
-    department1: "",
-    department2: "",
-    contact1_name: "",
-    contact1_email: "",
-    contact1_phone: "",
-    contact2_name: "",
-    contact2_email: "",
-    contact2_phone: "",
+    company: "",
     effectivity_start: "",
     effectivity_end: "",
     status: "pending",
+    contacts: [
+      { fullname: "", position: "", email: "", phone: "" }, // Contact 1
+      { fullname: "", position: "", email: "", phone: "" }, // Contact 2 (optional)
+    ],
   });
 
-  /* ---------------------------------------------
-     FETCH ALL COLLEGES ON PAGE LOAD
-  --------------------------------------------- */
-  useEffect(() => {
-    axiosInstance
-      .get("/all_colleges_api/")
-      .then((res) => setColleges(res.data))
-      .catch(console.log);
-  }, []);
+  const [errors, setErrors] = useState([
+    { email: false, phone: false }, // Contact 1
+    { email: false, phone: false }, // Contact 2
+  ]);
 
-  /* ---------------------------------------------
-     HANDLE CHANGE (GENERIC)
-  --------------------------------------------- */
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  /* ---------------------------------------------
-     WHEN COLLEGE 1 CHANGES → LOAD DEPARTMENTS UNDER IT
-  --------------------------------------------- */
-  const handleCollege1Change = (e) => {
-    const collegeId = e.target.value;
+  const handleContactChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedContacts = [...form.contacts];
+    const updatedErrors = [...errors];
 
-    setForm({ ...form, college1: collegeId, department1: "" });
+    if (name === "phone") {
+      // Only digits allowed
+      if (/^\d*$/.test(value)) {
+        updatedContacts[index][name] = value;
+        updatedErrors[index][name] = false;
+      } else {
+        updatedErrors[index][name] = true;
+      }
+    } else if (name === "email") {
+      updatedContacts[index][name] = value;
+      updatedErrors[index][name] = !value.includes("@");
+    } else {
+      updatedContacts[index][name] = value;
+    }
 
-    if (!collegeId) return setDepartments1([]);
-
-    axiosInstance
-      .get(`/departments_by_college/${collegeId}/`)
-      .then((res) => setDepartments1(res.data))
-      .catch(console.log);
+    setForm({ ...form, contacts: updatedContacts });
+    setErrors(updatedErrors);
   };
 
-  /* ---------------------------------------------
-     WHEN COLLEGE 2 CHANGES → LOAD DEPARTMENTS UNDER IT
-  --------------------------------------------- */
-  const handleCollege2Change = (e) => {
-    const collegeId = e.target.value;
-
-    setForm({ ...form, college2: collegeId, department2: "" });
-
-    if (!collegeId) return setDepartments2([]);
-
-    axiosInstance
-      .get(`/departments_by_college/${collegeId}/`)
-      .then((res) => setDepartments2(res.data))
-      .catch(console.log);
-  };
-
-  /* ---------------------------------------------
-     SUBMIT
-  --------------------------------------------- */
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Remove empty contact 2 if not filled
+    const contactsToSend = form.contacts.filter(
+      (c) => c.fullname || c.email || c.phone
+    );
+
+    // Final validation before submit
+    for (let i = 0; i < contactsToSend.length; i++) {
+      const c = contactsToSend[i];
+      if (errors[i].email) {
+        alert(`Invalid email for ${c.fullname || "Contact " + (i + 1)}`);
+        return;
+      }
+      if (errors[i].phone) {
+        alert(`Phone must contain only digits for ${c.fullname || "Contact " + (i + 1)}`);
+        return;
+      }
+      if (i === 0 && (!c.email || !c.phone)) {
+        alert("Contact 1 must have email and phone filled");
+        return;
+      }
+    }
+
     axiosInstance
-      .post("/partners/", form)
+      .post("/partners/", { ...form, contacts: contactsToSend })
       .then(() => navigate("/partnerships"))
       .catch(console.log);
   };
@@ -94,157 +86,25 @@ const AddPartnership = () => {
   return (
     <div className="page-container">
       <Sidebar />
-
       <div className="content">
         <h1>Create New Partnership</h1>
 
         <form className="form-card" onSubmit={handleSubmit}>
-
           <div className="top-row">
             <button className="btn-back" type="button" onClick={() => navigate(-1)}>
-              <ArrowLeft size={16} />
-              Back
+              <ArrowLeft size={16} /> Back
             </button>
           </div>
 
-          {/* ===================== PARTNER ORGS ===================== */}
-          <h2 className="section-title">Partner Organizations</h2>
-
-          <div className="form-grid">
-            <input
-              name="company1"
-              value={form.company1}
-              onChange={handleChange}
-              placeholder="Company / College 1"
-              required
-            />
-
-            <input
-              name="company2"
-              value={form.company2}
-              onChange={handleChange}
-              placeholder="Company / College 2 (Optional)"
-            />
-          </div>
-
-          {/* ===================== COLLEGES & COURSES ===================== */}
-          <h2 className="section-title">Courses / Departments Involved</h2>
-
-          <div className="form-grid">
-            {/* COLLEGE 1 */}
-            <select
-              name="college1"
-              value={form.college1}
-              onChange={handleCollege1Change}
-              required
-            >
-              <option value="">Select College 1</option>
-              {colleges.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            {/* COLLEGE 2 */}
-            <select
-              name="college2"
-              value={form.college2}
-              onChange={handleCollege2Change}
-            >
-              <option value="">Select College 2 (Optional)</option>
-              {colleges.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-grid">
-            {/* DEPARTMENT 1 */}
-            <select
-              name="department1"
-              value={form.department1}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Department 1</option>
-              {departments1.map((d) => (
-                <option key={d.id} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-
-            {/* DEPARTMENT 2 */}
-            <select
-              name="department2"
-              value={form.department2}
-              onChange={handleChange}
-            >
-              <option value="">Select Department 2 (Optional)</option>
-              {departments2.map((d) => (
-                <option key={d.id} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* ===================== CONTACT PERSON 1 ===================== */}
-          <h2 className="section-title">Contact Person 1</h2>
-
-          <div className="form-grid">
-            <input
-              name="contact1_name"
-              value={form.contact1_name}
-              onChange={handleChange}
-              placeholder="Full Name"
-              required
-            />
-            <input
-              name="contact1_email"
-              value={form.contact1_email}
-              onChange={handleChange}
-              placeholder="Email Address"
-              required
-            />
-            <input
-              name="contact1_phone"
-              value={form.contact1_phone}
-              onChange={handleChange}
-              placeholder="Phone Number"
-              required
-            />
-          </div>
-
-          {/* ===================== CONTACT PERSON 2 ===================== */}
-          <h2 className="section-title">Contact Person 2 (Optional)</h2>
-
-          <div className="form-grid">
-            <input
-              name="contact2_name"
-              value={form.contact2_name}
-              onChange={handleChange}
-              placeholder="Full Name"
-            />
-            <input
-              name="contact2_email"
-              value={form.contact2_email}
-              onChange={handleChange}
-              placeholder="Email Address"
-            />
-            <input
-              name="contact2_phone"
-              value={form.contact2_phone}
-              onChange={handleChange}
-              placeholder="Phone Number"
-            />
-          </div>
-
-          {/* ===================== EFFECTIVITY DATES ===================== */}
-          <h2 className="section-title">Effectivity Dates</h2>
+          {/* Partner */}
+          <h2 className="section-title">Partner</h2>
+          <input
+            name="company"
+            value={form.company}
+            onChange={handleChange}
+            placeholder="Company Name"
+            required
+          />
 
           <div className="date-row">
             <div className="date-block">
@@ -257,7 +117,6 @@ const AddPartnership = () => {
                 required
               />
             </div>
-
             <div className="date-block">
               <p className="date-label">End Date</p>
               <input
@@ -270,19 +129,75 @@ const AddPartnership = () => {
             </div>
           </div>
 
-          {/* ===================== STATUS ===================== */}
           <h2 className="section-title">Status</h2>
-
           <select name="status" value={form.status} onChange={handleChange}>
             <option value="pending">Pending</option>
             <option value="active">Active</option>
             <option value="expired">Expired</option>
           </select>
 
-          {/* ===================== SUBMIT ===================== */}
-          <button type="submit" className="btn-save">
-            Save Partnership
-          </button>
+          {/* Contacts */}
+          {form.contacts.map((contact, index) => (
+            <div key={index}>
+              <h2 className="section-title">
+                Contact Person {index + 1} {index === 1 && "(Optional)"}
+              </h2>
+              <div className="form-grid">
+                <div className="input-group">
+                  <input
+                    name="fullname"
+                    value={contact.fullname}
+                    onChange={(e) => handleContactChange(index, e)}
+                    placeholder="Full Name"
+                    required={index === 0}
+                  />
+                </div>
+
+                <div className="input-group">
+                  <input
+                    name="position"
+                    value={contact.position}
+                    onChange={(e) => handleContactChange(index, e)}
+                    placeholder="Position (Optional)"
+                  />
+                </div>
+
+                <div className="input-group">
+                  <input
+                    name="email"
+                    value={contact.email}
+                    onChange={(e) => handleContactChange(index, e)}
+                    placeholder="Email"
+                    required={index === 0}
+                    style={{
+                      borderColor: errors[index].email ? "red" : "#ccc",
+                    }}
+                  />
+                  {errors[index].email && (
+                    <span className="error-tooltip">Invalid email (must contain "@")</span>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <input
+                    name="phone"
+                    value={contact.phone}
+                    onChange={(e) => handleContactChange(index, e)}
+                    placeholder="Phone"
+                    required={index === 0}
+                    style={{
+                      borderColor: errors[index].phone ? "red" : "#ccc",
+                    }}
+                  />
+                  {errors[index].phone && (
+                    <span className="error-tooltip">Phone must contain only digits</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <button type="submit" className="btn-save">Save Partnership</button>
         </form>
       </div>
     </div>

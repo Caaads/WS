@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.response import Response
 import json
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 def get_departments(request):
     college_id = request.GET.get('college_id')
@@ -59,6 +61,21 @@ class PartnerContactViewSet(viewsets.ModelViewSet):
 class PartnershipActivityViewSet(viewsets.ModelViewSet):
     queryset = PartnershipActivity.objects.all()
     serializer_class = PartnershipActivitySerializer
+
+# -------------------------------------------
+# Endpoint to fetch all contacts (for tab)
+# -------------------------------------------
+@api_view(["GET"])
+def all_contacts(request):
+    contacts = PartnerContact.objects.all().order_by("fullname")
+    serializer = PartnerContactSerializer(contacts, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(["GET"])
+def contacts_by_partner(request, partner_id):
+    contacts = PartnerContact.objects.filter(partner_id=partner_id)
+    serializer = PartnerContactSerializer(contacts, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 
 # =====================================================
@@ -452,3 +469,35 @@ def update_user(request):
         "college": user.college.id if user.college else None,
         "department": user.department.id if user.department else None
     })
+
+
+@login_required
+def my_partners(request):
+    """
+    Returns a JSON list of all partners associated with the logged-in user.
+    """
+    user = request.user
+    # Filter partners linked to this user
+    partners = Partner.objects.filter(contact1_email=user.email)
+
+    # Serialize the data
+    serializer = PartnerSerializer(partners, many=True)
+
+    # Return as JSON response
+    return JsonResponse(serializer.data, safe=False)
+
+
+
+
+# Only allow superadmins
+def all_partners_page(request):
+    if not request.user.is_authenticated or request.user.role != "superadmin":
+        raise PermissionDenied("You do not have permission to access this page.")
+
+    partners = Partner.objects.all().order_by("-created_at")
+    context = {
+        "partners": partners
+    }
+    return render(request, "partners/all_partners.html", context)
+
+

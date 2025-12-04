@@ -9,62 +9,54 @@ const Contacts = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/contacts/")
+      .get("/contacts/") // fetch from updated endpoint
       .then((res) => setContacts(res.data))
       .catch((err) => console.log(err));
   }, []);
 
-return (
-  <div className="page-container">
-    <Navbar />
-    <Sidebar />
+  return (
+    <div className="page-container">
+      <Navbar />
+      <Sidebar />
+      <div className="content">
+        <div className="page-header header-row">
+          <h1>Contacts</h1>
+          <a href="/add-contact" className="btn-add">+ Add Contact</a>
+        </div>
 
-    <div className="content">
-      {/* Add top margin to avoid overlap with navbar */}
-      <div className="page-header header-row">
-        <h1>Contacts</h1>
-        <a href="/add-contact" className="btn-add">
-          + Add Contact
-        </a>
-      </div>
-
-      <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Partner</th>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Email</th>
-              <th>Phone</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {contacts.length > 0 ? (
-              contacts.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.partner_name || item.partner}</td>
-                  <td>{item.name}</td>
-                  <td>{item.position}</td>
-                  <td>{item.email}</td>
-                  <td>{item.phone}</td>
-                </tr>
-              ))
-            ) : (
+        <div className="table-container">
+          <table className="data-table">
+            <thead>
               <tr>
-                <td colSpan="5" className="no-data">
-                  No contacts found
-                </td>
+                <th>Partner</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Email</th>
+                <th>Phone</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {contacts.length > 0 ? (
+                contacts.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.partner_name}</td>
+                    <td>{item.fullname}</td>
+                    <td>{item.position || "N/A"}</td>
+                    <td>{item.email}</td>
+                    <td>{item.phone}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="no-data">No contacts found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default Contacts;

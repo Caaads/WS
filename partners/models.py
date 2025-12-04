@@ -133,27 +133,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 # Partner (Institution)
 # =====================================================
 class Partner(models.Model):
-    company1 = models.CharField(max_length=255)
-    college1 = models.CharField(max_length=255, blank=True, null=True)
-
-    company2 = models.CharField(max_length=255, blank=True, null=True)
-    college2 = models.CharField(max_length=255, blank=True, null=True)
-
-    contact1_name = models.CharField(max_length=255)
-    contact1_email = models.EmailField()
-    contact1_phone = models.CharField(max_length=50, default="0000000000")
-
-    contact2_name = models.CharField(max_length=255, blank=True, null=True)
-    contact2_email = models.EmailField(blank=True, null=True)
-    contact2_phone = models.CharField(max_length=50, blank=True, null=True)
-
+    company = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    college = models.CharField(max_length=255, blank=True, null=True)
+    
     effectivity_start = models.DateField()
-    effectivity_end = models.DateField()
-
-    status = models.CharField(max_length=50, default="pending")
-
+    effectivity_end = models.DateField()    
+    
+    STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("active", "Active"),
+        ("expired", "Expired"),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.company
 
 
 # =====================================================
@@ -162,12 +159,13 @@ class Partner(models.Model):
 class PartnerContact(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="contacts")
     fullname = models.CharField(max_length=255)
-    position = models.CharField(max_length=255)
+    position = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField()
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.fullname} - {self.partner.company1}"
+        return f"{self.fullname} - {self.partner.company}"
+
 
 
 # =====================================================

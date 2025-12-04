@@ -3,7 +3,7 @@
 ======================================= */
 .page-container {
   display: flex;
-  height: 100vh;
+  height: 120vh;
   background: #f4f6fa;
 }
 
@@ -11,7 +11,6 @@
   flex-grow: 1;
   padding: 30px;
   margin-left: 250px;
-  margin-top: 70px;
 }
 
 .page-header h1 {

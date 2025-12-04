@@ -35,10 +35,7 @@ const Partnerships = () => {
   };
 
   const columns = [
-    { header: "Company/Department 1", accessor: "company1" },
-    { header: "Company/Department 2", accessor: "company2" },
-    { header: "Course 1", accessor: "college1" },
-    { header: "Course 2", accessor: "college2" },
+    { header: "Company", accessor: "company" },
     {
       header: "Status",
       accessor: "status",
@@ -50,62 +47,62 @@ const Partnerships = () => {
     },
     {
       header: "Actions",
-  accessor: "actions",
-  render: (row) => (
-    <div className="actions">
-      <button className="action-btn view-btn" onClick={() => openModal(row)}>View</button>
-      <a href={`/edit-partnership/${row.id}`} className="action-btn edit-btn">Edit</a>
-      <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
-    </div>
+      accessor: "actions",
+      render: (row) => (
+        <div className="actions">
+          <button className="action-btn view-btn" onClick={() => openModal(row)}>View</button>
+          <a href={`/edit-partnership/${row.id}`} className="action-btn edit-btn">Edit</a>
+          <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
+        </div>
       ),
     },
   ];
 
-return (
-  <div className="page-container">
-    <Navbar />
-    <Sidebar />
-    <div className="content">
-      {/* Add top margin to avoid overlap with navbar */}
-      <div className="page-header">
-        <h1>Partnerships</h1>
-      </div>
-
-      <div className="btn-container">
-        <a href="/add-partnership" className="btn-add">+ Add Partnership</a>
-      </div>
-
-      <Table data={partners} columns={columns} />
-
-      {/* ======= Modal ======= */}
-      {showModal && selectedPartner && (
-        <div className="modal-backdrop" onClick={closeModal}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title">{selectedPartner.company1} {selectedPartner.company2 ? `/ ${selectedPartner.company2}` : ""}</h2>
-
-            <div className="modal-section">
-              <p><strong>Courses:</strong> {selectedPartner.college1 || "N/A"} {selectedPartner.college2 ? `, ${selectedPartner.college2}` : ""}</p>
-            </div>
-
-            <div className="modal-section">
-              <p><strong>Contact 1:</strong> {selectedPartner.contact1_name} | {selectedPartner.contact1_email} | {selectedPartner.contact1_phone}</p>
-              {selectedPartner.contact2_name && (
-                <p><strong>Contact 2:</strong> {selectedPartner.contact2_name} | {selectedPartner.contact2_email} | {selectedPartner.contact2_phone}</p>
-              )}
-            </div>
-
-            <div className="modal-section">
-              <p><strong>Effectivity:</strong> {formatDatePretty(selectedPartner.effectivity_start)} → {formatDatePretty(selectedPartner.effectivity_end)}</p>
-              <p><strong>Status:</strong> <span className={`status ${selectedPartner.status.toLowerCase()}`}>{selectedPartner.status}</span></p>
-            </div>
-
-            <button className="btn-close" onClick={closeModal}>Close</button>
-          </div>
+  return (
+    <div className="page-container">
+      <Navbar />
+      <Sidebar />
+      <div className="content">
+        <div className="page-header">
+          <h1>Partnerships</h1>
         </div>
-      )}
+
+        <div className="btn-container">
+          <a href="/add-partnership" className="btn-add">+ Add Partnership</a>
+        </div>
+
+        <Table data={partners} columns={columns} />
+
+        {showModal && selectedPartner && (
+          <div className="modal-backdrop" onClick={closeModal}>
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+              <h2 className="modal-title">{selectedPartner.company}</h2>
+
+              <div className="modal-section">
+                <p><strong>Contacts:</strong></p>
+                {selectedPartner.contacts?.length > 0 ? (
+                  selectedPartner.contacts.map((c, idx) => (
+                    <p key={idx}>
+                      {c.fullname} {c.position ? `(${c.position})` : ""} | {c.email} | {c.phone}
+                    </p>
+                  ))
+                ) : (
+                  <p>N/A</p>
+                )}
+              </div>
+
+              <div className="modal-section">
+                <p><strong>Effectivity:</strong> {formatDatePretty(selectedPartner.effectivity_start)} → {formatDatePretty(selectedPartner.effectivity_end)}</p>
+                <p><strong>Status:</strong> <span className={`status ${selectedPartner.status.toLowerCase()}`}>{selectedPartner.status}</span></p>
+              </div>
+
+              <button className="btn-close" onClick={closeModal}>Close</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Partnerships;

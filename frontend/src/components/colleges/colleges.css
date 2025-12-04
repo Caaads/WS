@@ -1,6 +1,6 @@
 .content {
   padding: 30px;
-  
+
   width: 100%;
 }
 
@@ -32,10 +32,14 @@ h1 {
   text-align: center;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
+  cursor: pointer;
+  border: #a1a1a1 solid 1px;
 }
 
 .college-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-15px);
+  border-left: rgb(164, 0, 34) solid 4px;
+
 }
 
 .college-logo {
@@ -68,23 +72,6 @@ h1 {
   cursor: pointer;
   transition: 0.2s;
 }
-
-.card-actions .view-btn {
-  background-color: #8a2be2;
-  color: #fff;
-}
-
-.card-actions .edit-btn {
-  background-color: #ffa500;
-  color: #fff;
-}
-
-.card-actions .delete-btn {
-  background-color: #ff4d4f;
-  color: #fff;
-}
-
-
 
 .actions {
   display: flex;

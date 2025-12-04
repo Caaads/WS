@@ -21,12 +21,7 @@ h1 {
    ============================ */
 .form-card {
   margin-left: 30px;
-  background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.98) 100%
-    ),
-    url("../../assets/hcdcbldg.png");
+  background-color: rgba(255, 255, 255, 0.9);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -132,6 +127,37 @@ select:focus {
 
 .btn-save:hover {
   transform: translateY(-2px);
+}
+/* ===================== Input Fields ===================== */
+input[name="company"] {
+  width: 730px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+}
+
+input[name="company"]::placeholder {
+  color: #999;               /* Soft placeholder color */
+  font-style: italic;
+}
+
+input[name="company"]:focus {
+  border-color: #5c6bc0;     /* Accent color on focus */
+  box-shadow: 0 0 5px rgba(92, 107, 192, 0.5); /* Subtle glow */
+}
+
+
+.error-tooltip {
+  color: red;
+  font-size: 12px;
+  margin-top: 3px;
+  position: absolute;
+  right: 0;
+  padding-right: 10px;
 }
 
 

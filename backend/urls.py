@@ -28,13 +28,20 @@ urlpatterns = [
     path("api/all_users/", views.all_users, name="get_all_users"),
     path('api/get_all_users/', views.get_all_users, name='get_all_users'),
     path('api/departments/', views.get_departments, name='get_departments'),
-
+    path('api/my_partners/', views.my_partners, name='my_partners'),
+    
 
 
     # PENDING USER REQUESTS
     path("pending-users/", views.get_pending_requests, name="pending_users"),
     path("pending-users/<int:user_id>/approve/", views.approve_request, name="approve_request"),
     path("pending-users/<int:user_id>/decline/", views.decline_request, name="decline_request"),
+
+    # Contacts
+    path('api/contacts/', views.all_contacts, name='all_contacts'),  # All contacts
+    path('api/contacts/<int:partner_id>/', views.contacts_by_partner, name='contacts-by-partner'),  # Contacts by partner
+
+    
     # path('all_partners_api/', views.all_partners_api, name='all_partners_api'),
     # path("all_colleges_api/", views.all_colleges_api, name="all_colleges_api"),
 ]

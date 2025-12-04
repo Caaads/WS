@@ -4,6 +4,8 @@ from .views import (
     PartnerViewSet,
     PartnerContactViewSet,
     PartnershipActivityViewSet,
+    all_contacts,
+    contacts_by_partner,
     signup_view,
     login_view,
     logout_view,
@@ -15,6 +17,7 @@ from .views import (
     all_users,
     departments_by_college,
     update_user,
+    my_partners,
 )
 from . import views
 
@@ -62,22 +65,14 @@ urlpatterns = [
     
     # UPDATE USER INFO
     path("update_user/", update_user, name="update_user"),
-    
-    
 
-    # # PARTNERS API
-    # path("users/", views.get_all_users, name="get_all_users"),
-    # path('all_partners_api/', views.all_partners_api, name='all_partners_api'),
+    # PARTNERS API
+    path("my_partners/", my_partners, name="my_partners"),    
 
-    # # BROWSER-FRIENDLY PARTNERS PAGE
-    # path('all_partners/', views.all_partners_page, name='all_partners_page'),
+    # BROWSER-FRIENDLY PARTNERS PAGE
+    path('all_partners/', views.all_partners_page, name='all_partners_page'),
 
-    # # ROUTER-REGISTERED VIEWSETS
-    # path("", include(router.urls)),
-
-    # path("api/colleges/", views.all_colleges_api, name="colleges_api"),
-    # path("all_colleges_api/", views.all_colleges_api, name="all_colleges_api"),
-
-    # path('colleges/', views.get_colleges),
-    # path('courses/', views.get_courses),
+    # CONTACTS API
+    path("contacts/", views.all_contacts, name="all_contacts"),
+    path("contacts_by_partner/<int:partner_id>/", views.contacts_by_partner, name="contacts_by_partner"),
 ]

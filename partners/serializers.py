@@ -15,7 +15,7 @@ from .models import (
 class PartnerContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartnerContact
-        fields = "__all__"
+        fields = ["fullname", "position", "email", "phone"]
 
 
 # =====================================================
@@ -31,19 +31,31 @@ class PartnershipActivitySerializer(serializers.ModelSerializer):
 # Partner / Institution Serializer
 # =====================================================
 class PartnerSerializer(serializers.ModelSerializer):
-    contacts = PartnerContactSerializer(many=True, read_only=True)
-    activities = PartnershipActivitySerializer(many=True, read_only=True)
+    contacts = PartnerContactSerializer(many=True)
 
     class Meta:
         model = Partner
-        fields = [
-            'id', 'company1', 'college1', 'company2', 'college2',
-            'contact1_name', 'contact1_email', 'contact1_phone',
-            'contact2_name', 'contact2_email', 'contact2_phone',
-            'effectivity_start', 'effectivity_end', 'status',
-            'created_at', 'updated_at',
-            'contacts', 'activities'
-        ]
+        fields = ["id", "company", "college", "effectivity_start", "effectivity_end", "status", "contacts"]
+
+    def create(self, validated_data):
+        contacts_data = validated_data.pop("contacts", [])
+        partner = Partner.objects.create(**validated_data)
+        for contact in contacts_data:
+            PartnerContact.objects.create(partner=partner, **contact)
+        return partner
+
+    def update(self, instance, validated_data):
+        contacts_data = validated_data.pop("contacts", [])
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Replace old contacts with new
+        instance.partnercontact_set.all().delete()
+        for contact in contacts_data:
+            PartnerContact.objects.create(partner=instance, **contact)
+
+        return instance
 
 
 # =====================================================
