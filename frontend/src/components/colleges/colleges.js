@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../shared/sidebar";
-import Table from "../shared/table";
 import Navbar from "../shared/navbar";
 import axiosInstance from "../../api/axiosConfig";
 import "./colleges.css";
@@ -26,13 +25,22 @@ const Colleges = () => {
     { header: "Partner Companies", accessor: "partners" },
     {
       header: "Actions",
-  accessor: "actions",
-  render: (row) => (
-    <div className="actions">
-      <a href={`/view-college/${row.id}`} className="action-btn view-btn">View</a>
-      <a href={`/edit-college/${row.id}`} className="action-btn edit-btn">Edit</a>
-      <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
-    </div>
+      accessor: "actions",
+      render: (row) => (
+        <div className="actions">
+          <a href={`/view-college/${row.id}`} className="view-btn">
+            View
+          </a>
+          <a href={`/edit-college/${row.id}`} className="edit-btn">
+            Edit
+          </a>
+          <button
+            onClick={() => handleDelete(row.id)}
+            className="delete-btn"
+          >
+            Delete
+          </button>
+        </div>
       ),
     },
   ];
@@ -47,11 +55,25 @@ return (
         <h1>Colleges</h1>
       </div>
 
-      <Table data={colleges} columns={columns} />
+        <div className="cards-container">
+          {colleges.length ? (
+            colleges.slice(0, 8).map((college) => (
+              <div className="college-card" key={college.id}>
+                <img
+                  src="/hcdc_logo.png"
+                  alt={college.name || "Logo"}
+                  className="college-logo"
+                />
+                <h3 className="college-title">{college.name || "Title"}</h3>
+              </div>
+            ))
+          ) : (
+            <p>No colleges found</p>
+          )}
+        </div>
+      </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default Colleges;
