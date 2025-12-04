@@ -14,46 +14,32 @@ const Colleges = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this college?")) return;
-    // Add API call here if needed
-    setColleges((prev) => prev.filter((c) => c.id !== id));
-  };
+  return (
+    <div className="page-container">
+      <Navbar />
+      <Sidebar />
 
+<<<<<<< HEAD
   const columns = [
     { header: "College", accessor: "college" },
     { header: "Partner Companies", accessor: "partners" },
     {
       header: "Actions",
-      accessor: "actions",
-      render: (row) => (
-        <div className="actions">
-          <a href={`/view-college/${row.id}`} className="view-btn">
-            View
-          </a>
-          <a href={`/edit-college/${row.id}`} className="edit-btn">
-            Edit
-          </a>
-          <button
-            onClick={() => handleDelete(row.id)}
-            className="delete-btn"
-          >
-            Delete
-          </button>
-        </div>
+  accessor: "actions",
+  render: (row) => (
+    <div className="actions">
+      <a href={`/view-college/${row.id}`} className="action-btn view-btn">View</a>
+      <a href={`/edit-college/${row.id}`} className="action-btn edit-btn">Edit</a>
+      <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
+    </div>
       ),
     },
   ];
-
-return (
-  <div className="page-container">
-    <Navbar />
-    <Sidebar />
-    <div className="content">
-      {/* Add top margin to avoid overlap with navbar */}
-      <div className="page-header">
-        <h1>Colleges</h1>
-      </div>
+      <div className="content">
+        <div className="page-header">
+          <h1>Colleges</h1>
+        </div>
+>>>>>>> f980195c8d97a69875e5cdfc8b209d556a83694b
 
         <div className="cards-container">
           {colleges.length ? (
