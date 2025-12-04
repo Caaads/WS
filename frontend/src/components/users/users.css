@@ -15,7 +15,7 @@
 }
 
 .add-btn {
-  background-color: #7a0019;
+  background: #003f7d;
   color: white;
   padding: 8px 16px;
   border-radius: 6px;
@@ -86,14 +86,6 @@
 
 .view-btn:hover {
   background-color: #666;
-}
-
-.edit-btn {
-  background-color: #0077cc;
-}
-
-.edit-btn:hover {
-  background-color: #005fa3;
 }
 
 .delete-btn {
@@ -182,6 +174,65 @@
 .btn-close:hover {
   background-color: #666;
 }
+.button-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Container for all filters / search fields */
+.filters-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* General search box */
+.search-box {
+  padding: 8px 12px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  background: #fff;
+  width: 220px;
+}
+
+.search-box:focus {
+  border-color: #8a2be2;
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+/* Dropdown style (for categories) */
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  width: 180px;
+  transition: 0.2s;
+}
+
+.filter-select:focus {
+  border-color: #8a2be2;
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+/* Optional label styling */
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+
+
 
 @keyframes fadeIn {
   from {opacity: 0; transform: translateY(-10px);}
