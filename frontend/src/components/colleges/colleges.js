@@ -4,6 +4,7 @@ import Navbar from "../shared/navbar";
 import axiosInstance from "../../api/axiosConfig";
 import "./colleges.css";
 
+
 const Colleges = () => {
   const [colleges, setColleges] = useState([]);
 
@@ -14,27 +15,10 @@ const Colleges = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  
-  const columns = [
-    { header: "College", accessor: "college" },
-    { header: "Partner Companies", accessor: "partners" },
-    {
-      header: "Actions",
-      accessor: "actions",
-      render: (row) => (
-        <div className="actions">
-          <a href={`/view-college/${row.id}`} className="action-btn view-btn">View</a>
-          <a href={`/edit-college/${row.id}`} className="action-btn edit-btn">Edit</a>
-          <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
-        </div>
-      ),
-    },
-  ];
-
-  
   const handleDelete = (id) => {
     console.log("Deleting ID:", id);
-    
+    // add your delete logic here later
+  };
 
   return (
     <div className="page-container">
@@ -64,7 +48,7 @@ const Colleges = () => {
         </div>
       </div>
     </div>
-  )
+  );
 };
-}
+
 export default Colleges;
