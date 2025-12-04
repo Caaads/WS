@@ -14,6 +14,7 @@ from .views import (
     get_all_users,
     all_users,
     departments_by_college,
+    update_user,
 )
 from . import views
 
@@ -55,10 +56,13 @@ urlpatterns = [
     path('declined/', views.declined_users_list, name='declined_users'),
     path('declined/<int:pk>/', views.delete_user, name='delete_declined_user'),
 
+    # COLLEGES API
     path("all_colleges_api/", college_list, name="college-list"),
-
     path("departments_by_college/<int:college_id>/", departments_by_college),
-
+    
+    # UPDATE USER INFO
+    path("update_user/", update_user, name="update_user"),
+    
     
 
     # # PARTNERS API

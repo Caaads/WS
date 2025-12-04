@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 
+
 class IsSuperAdmin(BasePermission):
     """
     Allows access only to users with role='superadmin'

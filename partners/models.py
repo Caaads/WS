@@ -105,12 +105,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(unique=True)
     fullname = models.CharField(max_length=255, blank=True)
-
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="user")
-
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
-
     # Email = username
     username = None
 
@@ -128,6 +125,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.fullname} ({self.email})"
+    
+
 
 
 # =====================================================

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -409,3 +409,46 @@ def delete_user(request, pk):
         return Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({"error": "User not found or not declined."}, status=status.HTTP_404_NOT_FOUND)
+    
+# =====================================================
+# UPDATE USER INFO
+# =====================================================
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user  # Current logged-in user
+
+    fullname = request.data.get("fullname")
+    email = request.data.get("email")
+    role = request.data.get("role")
+    college_id = request.data.get("college")
+    department_id = request.data.get("department")
+
+    # Update user fields
+    user.fullname = fullname
+    user.email = email
+    user.role = role
+
+    # Handle college
+    if college_id:
+        user.college = get_object_or_404(College, id=college_id)
+    else:
+        user.college = None
+
+    # Handle department
+    if department_id:
+        user.department = get_object_or_404(Department, id=department_id)
+    else:
+        user.department = None
+
+    user.save()
+
+    return Response({
+        "message": "User updated successfully",
+        "fullname": user.fullname,
+        "email": user.email,
+        "role": user.role,
+        "college": user.college.id if user.college else None,
+        "department": user.department.id if user.department else None
+    })
