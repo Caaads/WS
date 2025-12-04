@@ -54,6 +54,8 @@ urlpatterns = [
     path('declined/', views.declined_users_list, name='declined_users'),
     path('declined/<int:pk>/', views.delete_user, name='delete_declined_user'),
 
+    path("all_colleges_api/", college_list, name="college-list"),
+
     
 
     # # PARTNERS API
