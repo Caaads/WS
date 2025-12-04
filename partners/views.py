@@ -363,6 +363,16 @@ def department_list(request):
     serializer = DepartmentSerializer(departments, many=True)
     return Response(serializer.data)
 
+# =====================================================
+# DEPARTMENTS BY COLLEGE
+# =====================================================
+@api_view(["GET"])
+def departments_by_college(request, college_id):
+    departments = Department.objects.filter(college_id=college_id)
+    serializer = DepartmentSerializer(departments, many=True)
+    return Response(serializer.data)
+
+
 # Only superadmins can access
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])

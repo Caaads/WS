@@ -9,7 +9,8 @@ import {
   School,
   Users,
   Phone,
-  Mail
+  Mail,
+  UserRoundX,
 } from "lucide-react";
 
 import "./sidebar.css";
@@ -51,7 +52,7 @@ export default function Sidebar() {
   const superadminDeclinedItem = {
   name: "Declined Users",
   path: "/declined-users",
-  icon: <Users />
+  icon: <UserRoundX />
 };
 
 

@@ -4,9 +4,34 @@ import Navbar from "../shared/navbar";
 import axiosInstance from "../../api/axiosConfig";
 import "./colleges.css";
 
+// Import images
+import ccjeImg from "../../assets/CCJE.jpg";
+import cetImg from "../../assets/CET.jpg";
+import chatmeImg from "../../assets/CHATME.jpg";
+import husocomImg from "../../assets/HUSOCOM.jpg";
+import sbmeImg from "../../assets/SBME.jpg";
+import defaultImg from "../../assets/hcdc_logo.png"; // optional fallback
 
 const Colleges = () => {
   const [colleges, setColleges] = useState([]);
+
+  // Map college names → images
+  const collegeImages = {
+    "College of Criminal Justice Education": ccjeImg,
+    "CCJE": ccjeImg,
+
+    "College of Engineering and Technology": cetImg,
+    "CET": cetImg,
+
+    "College of Hospitality, Tourism & Management Education": chatmeImg,
+    "CHATME": chatmeImg,
+
+    "Humanities & Social Sciences": husocomImg,
+    "HUSOCOM": husocomImg,
+
+    "School of Business & Management Education": sbmeImg,
+    "SBME": sbmeImg,
+  };
 
   useEffect(() => {
     axiosInstance
@@ -14,11 +39,6 @@ const Colleges = () => {
       .then((res) => setColleges(res.data))
       .catch((err) => console.log(err));
   }, []);
-
-  const handleDelete = (id) => {
-    console.log("Deleting ID:", id);
-    // add your delete logic here later
-  };
 
   return (
     <div className="page-container">
@@ -32,16 +52,21 @@ const Colleges = () => {
 
         <div className="cards-container">
           {colleges.length ? (
-            colleges.slice(0, 8).map((college) => (
-              <div className="college-card" key={college.id}>
-                <img
-                  src="/hcdc_logo.png"
-                  alt={college.name || "Logo"}
-                  className="college-logo"
-                />
-                <h3 className="college-title">{college.name || "Title"}</h3>
-              </div>
-            ))
+            colleges.slice(0, 7).map((college) => {
+              const imgSrc =
+                collegeImages[college.name] || defaultImg;
+              
+              return (
+                <div className="college-card" key={college.id}>
+                  <img
+                    src={imgSrc}
+                    alt={college.name}
+                    className="college-logo"
+                  />
+                  <h3 className="college-title">{college.name}</h3>
+                </div>
+              );
+            })
           ) : (
             <p>No colleges found</p>
           )}

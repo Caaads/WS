@@ -13,6 +13,7 @@ from .views import (
     department_list,
     get_all_users,
     all_users,
+    departments_by_college,
 )
 from . import views
 
@@ -55,6 +56,8 @@ urlpatterns = [
     path('declined/<int:pk>/', views.delete_user, name='delete_declined_user'),
 
     path("all_colleges_api/", college_list, name="college-list"),
+
+    path("departments_by_college/<int:college_id>/", departments_by_college),
 
     
 

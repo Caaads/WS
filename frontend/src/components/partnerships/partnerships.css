@@ -231,17 +231,15 @@ tbody tr:hover {
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #7a0019;
 }
 
 .modal-section {
   margin-bottom: 15px;
-  color: #000000;
 }
 
 .modal-section p {
   margin: 5px 0;
-  color: #000000;
+
 }
 
 .btn-close {

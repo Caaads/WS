@@ -53,14 +53,14 @@ const EditPartnership = () => {
               name="company1"
               value={form.company1 || ""}
               onChange={handleChange}
-              placeholder="Company / Department 1"
+              placeholder="Company / College 1"
               required
             />
             <input
               name="company2"
               value={form.company2 || ""}
               onChange={handleChange}
-              placeholder="Company / Department 2 (Optional)"
+              placeholder="Company / College 2(Optional)"
             />
           </div>
 

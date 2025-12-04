@@ -131,7 +131,6 @@ select:focus {
 }
 
 .btn-save:hover {
-  background: linear-gradient(90deg, var(--hcdc-maroon-dark), var(--hcdc-blue));
   transform: translateY(-2px);
 }
 
