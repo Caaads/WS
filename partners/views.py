@@ -501,3 +501,9 @@ def all_partners_page(request):
     return render(request, "partners/all_partners.html", context)
 
 
+
+@api_view(["GET"])
+def college_detail_api(request, pk):
+    college = College.objects.get(id=pk)
+    serializer = CollegeSerializer(college)
+    return Response(serializer.data)

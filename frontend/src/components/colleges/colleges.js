@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../shared/sidebar";
 import Navbar from "../shared/navbar";
 import axiosInstance from "../../api/axiosConfig";
@@ -14,6 +15,7 @@ import defaultImg from "../../assets/hcdc_logo.png"; // optional fallback
 
 const Colleges = () => {
   const [colleges, setColleges] = useState([]);
+    const navigate = useNavigate();
 
   // Map college names → images
   const collegeImages = {
@@ -57,14 +59,15 @@ const Colleges = () => {
                 collegeImages[college.name] || defaultImg;
               
               return (
-                <div className="college-card" key={college.id}>
-                  <img
-                    src={imgSrc}
-                    alt={college.name}
-                    className="college-logo"
-                  />
-                  <h3 className="college-title">{college.name}</h3>
-                </div>
+              <div
+  className="college-card"
+  key={college.id}
+  onClick={() => navigate(`/colleges/${college.id}`)}
+  >
+  <img src={imgSrc} alt={college.name} className="college-logo" />
+  <h3 className="college-title">{college.name}</h3>
+</div>
+
               );
             })
           ) : (
