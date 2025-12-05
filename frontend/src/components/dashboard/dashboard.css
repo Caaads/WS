@@ -4,7 +4,7 @@
 .page-container {
   display: flex;
   height: 120vh;
-  background: #f4f6fa;
+  background:url('../../assets/hcdcbldg.png') no-repeat center center fixed;
 }
 
 .content {
@@ -33,7 +33,7 @@
    CARD BASE STYLE
 ======================================= */
 .card {
-  background: #fff;
+  background-color: #ffffff;
   padding: 25px 20px;
   border-radius: 18px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -42,6 +42,9 @@
   overflow: hidden;
   cursor: pointer;
   border-left: 6px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card:hover {
@@ -55,6 +58,7 @@
   top: 20px;
   right: 20px;
   opacity: 0.25;
+  color: #222;
 }
 
 /* Text */

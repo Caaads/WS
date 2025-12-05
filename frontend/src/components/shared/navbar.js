@@ -59,8 +59,12 @@ export default function Navbar() {
                 <small>
                   {user?.role === "superadmin" && "Superadmin"}
                   {user?.role === "college_admin" && `${user.college} Admin`}
-                  {user?.role === "department_admin" &&
-                    `${user.department} Admin`}
+                  {user?.role === "department_admin" && `${user.department} Admin`}
+                  {user?.role === "student" && (
+                      user.department ? `${user.department} Student` : "Student"
+                      )}
+                  {user?.role === "guest" && "Guest"}
+                  {(user?.role === "user" && user?.role !== "guest") && "User"}
                 </small>
               </div>
 

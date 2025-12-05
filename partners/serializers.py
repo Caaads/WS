@@ -51,7 +51,7 @@ class PartnerSerializer(serializers.ModelSerializer):
         instance.save()
 
         # Replace old contacts with new
-        instance.partnercontact_set.all().delete()
+        instance.contacts.all().delete()
         for contact in contacts_data:
             PartnerContact.objects.create(partner=instance, **contact)
 

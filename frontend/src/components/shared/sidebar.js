@@ -85,10 +85,14 @@ export default function Sidebar() {
               <div className="user-info under-logo">
                 <h3>{user.fullname}</h3>
                 <p>
-                  {user.role === "superadmin" && "Superadmin"}
-                {user?.role === "college_admin" && `${user.college} Admin`}
-                {user?.role === "department_admin" && `${user.department} Admin`}
-                  {(user.role === "user" || user.role === "guest") && "User"}
+                  {user?.role === "superadmin" && "Superadmin"}
+                  {user?.role === "college_admin" && `${user.college} Admin`}
+                  {user?.role === "department_admin" && `${user.department} Admin`}
+                  {user?.role === "student" && (
+                      user.department ? `${user.department} Student` : "Student"
+                      )}
+                  {user?.role === "guest" && "Guest"}
+                  {(user?.role === "user" && user?.role !== "guest") && "User"}
                 </p>
               </div>
             )}
