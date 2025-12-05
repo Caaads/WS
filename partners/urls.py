@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     PartnerViewSet,
     PartnerContactViewSet,
-    PartnershipActivityViewSet,
     all_contacts,
     contacts_by_partner,
     signup_view,
@@ -25,9 +24,9 @@ from . import views
 # Register ViewSets with router
 # -----------------------------
 router = DefaultRouter()
-router.register(r'partners', PartnerViewSet)
+router.register(r'partners', PartnerViewSet, basename='partner')
 router.register(r'partner-contacts', PartnerContactViewSet)
-router.register(r'partner-activities', PartnershipActivityViewSet)
+
 router.register(r'users', UserViewSet, basename='user')  # CRUD API
 
 # -----------------------------
@@ -77,4 +76,5 @@ urlpatterns = [
     path("contacts_by_partner/<int:partner_id>/", views.contacts_by_partner, name="contacts_by_partner"),
 
     path("college/<int:pk>/", views.college_detail_api)
+
 ]

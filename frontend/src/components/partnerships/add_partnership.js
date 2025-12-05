@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../shared/sidebar";
 import axiosInstance from "../../api/axiosConfig";
@@ -8,21 +8,47 @@ import "./add_partnership.css";
 const AddPartnership = () => {
   const navigate = useNavigate();
 
+  const [colleges, setColleges] = useState([]);
+  const [departments, setDepartments] = useState([]);
+
   const [form, setForm] = useState({
     company: "",
     effectivity_start: "",
     effectivity_end: "",
     status: "pending",
+    college_id: "",      // selected college
+    department_id: "",   // selected department
     contacts: [
-      { fullname: "", position: "", email: "", phone: "" }, // Contact 1
-      { fullname: "", position: "", email: "", phone: "" }, // Contact 2 (optional)
+      { fullname: "", position: "", email: "", phone: "" },
+      { fullname: "", position: "", email: "", phone: "" },
     ],
   });
 
   const [errors, setErrors] = useState([
-    { email: false, phone: false }, // Contact 1
-    { email: false, phone: false }, // Contact 2
+    { email: false, phone: false },
+    { email: false, phone: false },
   ]);
+
+  // Fetch colleges on mount
+  useEffect(() => {
+    axiosInstance
+      .get("/all_colleges_api/")
+      .then((res) => setColleges(res.data))
+      .catch(console.error);
+  }, []);
+
+  // Fetch departments whenever a college is selected
+  useEffect(() => {
+    if (form.college_id) {
+      axiosInstance
+        .get(`/departments_by_college/${form.college_id}/`)
+        .then((res) => setDepartments(res.data))
+        .catch(console.error);
+    } else {
+      setDepartments([]);
+      setForm((prev) => ({ ...prev, department_id: "" }));
+    }
+  }, [form.college_id]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,7 +60,6 @@ const AddPartnership = () => {
     const updatedErrors = [...errors];
 
     if (name === "phone") {
-      // Only digits allowed
       if (/^\d*$/.test(value)) {
         updatedContacts[index][name] = value;
         updatedErrors[index][name] = false;
@@ -55,12 +80,20 @@ const AddPartnership = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Remove empty contact 2 if not filled
+    if (!form.college_id) {
+      alert("Please select a college.");
+      return;
+    }
+
+    if (!form.department_id) {
+      alert("Please select a department.");
+      return;
+    }
+
     const contactsToSend = form.contacts.filter(
       (c) => c.fullname || c.email || c.phone
     );
 
-    // Final validation before submit
     for (let i = 0; i < contactsToSend.length; i++) {
       const c = contactsToSend[i];
       if (errors[i].email) {
@@ -106,6 +139,34 @@ const AddPartnership = () => {
             required
           />
 
+          {/* College Dropdown */}
+          <h2 className="section-title">College</h2>
+          <select name="college_id" value={form.college_id} onChange={handleChange} required>
+            <option value="">Select College</option>
+            {colleges.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+
+          {/* Department Dropdown */}
+          {departments.length > 0 && (
+            <>
+              <h2 className="section-title">Department</h2>
+              <select
+                name="department_id"
+                value={form.department_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </>
+          )}
+
+          {/* Dates */}
           <div className="date-row">
             <div className="date-block">
               <p className="date-label">Start Date</p>
@@ -129,6 +190,7 @@ const AddPartnership = () => {
             </div>
           </div>
 
+          {/* Status */}
           <h2 className="section-title">Status</h2>
           <select name="status" value={form.status} onChange={handleChange}>
             <option value="pending">Pending</option>
@@ -142,57 +204,35 @@ const AddPartnership = () => {
               <h2 className="section-title">
                 Contact Person {index + 1} {index === 1 && "(Optional)"}
               </h2>
+
               <div className="form-grid">
-                <div className="input-group">
-                  <input
-                    name="fullname"
-                    value={contact.fullname}
-                    onChange={(e) => handleContactChange(index, e)}
-                    placeholder="Full Name"
-                    required={index === 0}
-                  />
-                </div>
-
-                <div className="input-group">
-                  <input
-                    name="position"
-                    value={contact.position}
-                    onChange={(e) => handleContactChange(index, e)}
-                    placeholder="Position (Optional)"
-                  />
-                </div>
-
-                <div className="input-group">
-                  <input
-                    name="email"
-                    value={contact.email}
-                    onChange={(e) => handleContactChange(index, e)}
-                    placeholder="Email"
-                    required={index === 0}
-                    style={{
-                      borderColor: errors[index].email ? "red" : "#ccc",
-                    }}
-                  />
-                  {errors[index].email && (
-                    <span className="error-tooltip">Invalid email (must contain "@")</span>
-                  )}
-                </div>
-
-                <div className="input-group">
-                  <input
-                    name="phone"
-                    value={contact.phone}
-                    onChange={(e) => handleContactChange(index, e)}
-                    placeholder="Phone"
-                    required={index === 0}
-                    style={{
-                      borderColor: errors[index].phone ? "red" : "#ccc",
-                    }}
-                  />
-                  {errors[index].phone && (
-                    <span className="error-tooltip">Phone must contain only digits</span>
-                  )}
-                </div>
+                <input
+                  name="fullname"
+                  value={contact.fullname}
+                  onChange={(e) => handleContactChange(index, e)}
+                  placeholder="Full Name"
+                  required={index === 0}
+                />
+                <input
+                  name="position"
+                  value={contact.position}
+                  onChange={(e) => handleContactChange(index, e)}
+                  placeholder="Position (Optional)"
+                />
+                <input
+                  name="email"
+                  value={contact.email}
+                  onChange={(e) => handleContactChange(index, e)}
+                  placeholder="Email"
+                  required={index === 0}
+                />
+                <input
+                  name="phone"
+                  value={contact.phone}
+                  onChange={(e) => handleContactChange(index, e)}
+                  placeholder="Phone"
+                  required={index === 0}
+                />
               </div>
             </div>
           ))}

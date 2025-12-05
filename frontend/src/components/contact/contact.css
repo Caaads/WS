@@ -94,7 +94,6 @@ h1 {
 
 /* Table Headers */
 .contacts-table th {
-  background: linear-gradient(90deg, #7a0019, #0054a6);
   color: #fff;
   text-align: left;
   padding: 14px;

@@ -25,7 +25,6 @@ def get_departments(request):
 from .models import (
     Partner,
     PartnerContact,
-    PartnershipActivity,
     User,
     College,
     Department,
@@ -35,7 +34,6 @@ from .models import (
 from .serializers import (
     PartnerSerializer,
     PartnerContactSerializer,
-    PartnershipActivitySerializer,
     UserListSerializer,
     UserSerializer,
     CollegeSerializer,
@@ -49,18 +47,20 @@ from .permissions import IsSuperAdmin
 # PARTNER CRUD
 # =====================================================
 class PartnerViewSet(viewsets.ModelViewSet):
-    queryset = Partner.objects.all().order_by("-created_at")
     serializer_class = PartnerSerializer
+
+    def get_queryset(self):
+        queryset = Partner.objects.all().order_by("-created_at")
+        college_id = self.request.GET.get("college_id")
+        if college_id:
+            queryset = queryset.filter(college_id=college_id)
+        return queryset
 
 
 class PartnerContactViewSet(viewsets.ModelViewSet):
     queryset = PartnerContact.objects.all()
     serializer_class = PartnerContactSerializer
 
-
-class PartnershipActivityViewSet(viewsets.ModelViewSet):
-    queryset = PartnershipActivity.objects.all()
-    serializer_class = PartnershipActivitySerializer
 
 # -------------------------------------------
 # Endpoint to fetch all contacts (for tab)
@@ -507,3 +507,11 @@ def college_detail_api(request, pk):
     college = College.objects.get(id=pk)
     serializer = CollegeSerializer(college)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def all_colleges(request):
+    colleges = College.objects.prefetch_related('departments').all()  # fetch related departments
+    serializer = CollegeSerializer(colleges, many=True)
+    return Response(serializer.data)
+

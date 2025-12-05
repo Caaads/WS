@@ -134,7 +134,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 # =====================================================
 class Partner(models.Model):
     company = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    college = models.CharField(max_length=255, blank=True, null=True)
+    college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
+    department = models.ForeignKey("Department", on_delete=models.SET_NULL, null=True, blank=True)
     
     effectivity_start = models.DateField()
     effectivity_end = models.DateField()    
@@ -167,15 +168,3 @@ class PartnerContact(models.Model):
         return f"{self.fullname} - {self.partner.company}"
 
 
-
-# =====================================================
-# Activity Logs
-# =====================================================
-class PartnershipActivity(models.Model):
-    partner = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="activities")
-    activity_date = models.DateField()
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.partner.company1} ({self.activity_date})"

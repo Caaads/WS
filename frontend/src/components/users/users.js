@@ -10,6 +10,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   // Filters
   const [searchName, setSearchName] = useState("");
@@ -80,6 +81,7 @@ const Users = () => {
   const openModal = (user = null, create = false) => {
     setSelectedUser(user);
     setCreating(create);
+    setEditing(false);
 
     if (create) {
       setFormData({
@@ -90,6 +92,15 @@ const Users = () => {
         college: "",
         department: "",
       });
+    } else if (user) {
+      setFormData({
+        fullname: user.fullname,
+        email: user.email,
+        password: "",
+        role: user.role,
+        college: user.college?.id || "",
+        department: user.department?.id || "",
+      });
     }
 
     setShowModal(true);
@@ -99,6 +110,7 @@ const Users = () => {
     setShowModal(false);
     setSelectedUser(null);
     setCreating(false);
+    setEditing(false);
   };
 
   const handleChange = (e) => {
@@ -131,7 +143,7 @@ const Users = () => {
       const res = await axiosInstance.post("/signup/", payload);
 
       if (res.data.success) {
-        alert("User created successfully!");
+        alert("User created successfully! Check requests tab");
         closeModal();
         fetchUsers();
       } else {
@@ -140,6 +152,41 @@ const Users = () => {
     } catch (err) {
       console.error(err);
       alert("Failed to create user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateUser = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        fullname: formData.fullname,
+        email: formData.email,
+        role: formData.role,
+        college:
+          ["student", "college_admin", "department_admin"].includes(
+            formData.role
+          )
+            ? formData.college || null
+            : null,
+        department:
+          ["student", "department_admin"].includes(formData.role)
+            ? formData.department || null
+            : null,
+      };
+      // include password only if not empty
+      if (formData.password) payload.password = formData.password;
+
+      const res = await axiosInstance.put(`/users/${selectedUser.id}/`, payload);
+      setUsers((prev) =>
+        prev.map((u) => (u.id === selectedUser.id ? res.data : u))
+      );
+      alert("User updated successfully!");
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update user.");
     } finally {
       setLoading(false);
     }
@@ -156,7 +203,6 @@ const Users = () => {
       .catch(() => alert("Delete failed."));
   };
 
-  // FILTERED LIST (department filter removed)
   const filteredUsers = users
     .filter((u) =>
       u.fullname.toLowerCase().includes(searchName.toLowerCase())
@@ -179,6 +225,9 @@ const Users = () => {
 
         {/* FILTERS */}
         <div className="filters-row">
+          <button className="btn add-btn" onClick={() => openModal(null, true)}>
+            Create User
+          </button>
           <input
             type="text"
             placeholder="Search Name"
@@ -208,7 +257,6 @@ const Users = () => {
             <option value="guest">Guest</option>
           </select>
 
-          {/* COLLEGE FILTER (department filter removed) */}
           <select
             className="filter-select"
             value={collegeFilter}
@@ -221,10 +269,6 @@ const Users = () => {
               </option>
             ))}
           </select>
-
-          <button className="btn add-btn" onClick={() => openModal(null, true)}>
-            Create User
-          </button>
         </div>
 
         {/* USERS TABLE */}
@@ -237,7 +281,6 @@ const Users = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {filteredUsers.length ? (
                 filteredUsers.map((u) => (
@@ -250,6 +293,12 @@ const Users = () => {
                         onClick={() => openModal(u)}
                       >
                         View
+                      </button>
+                      <button
+                        className="btn edit-btn"
+                        onClick={() => { openModal(u); setEditing(true); }}
+                      >
+                        Edit
                       </button>
                       <button
                         className="btn delete-btn"
@@ -275,10 +324,13 @@ const Users = () => {
         {showModal && (
           <div className="modal-backdrop">
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-              {creating ? (
+              {creating || editing ? (
                 <>
-                  <h2>Create User</h2>
-                  <form onSubmit={handleCreateUser} className="edit-user-form">
+                  <h2>{creating ? "Create User" : "Edit User"}</h2>
+                  <form
+                    onSubmit={creating ? handleCreateUser : (e) => { e.preventDefault(); handleUpdateUser(); }}
+                    className="edit-user-form"
+                  >
                     <label>
                       Full Name
                       <input
@@ -368,7 +420,8 @@ const Users = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        required
+                        placeholder={editing ? "(Leave blank to keep current)" : ""}
+                        required={creating}
                       />
                     </label>
 
@@ -378,7 +431,7 @@ const Users = () => {
                         className="btn save-btn"
                         disabled={loading}
                       >
-                        {loading ? "Creating..." : "Create"}
+                        {loading ? (creating ? "Creating..." : "Saving...") : (creating ? "Create" : "Save")}
                       </button>
                       <button
                         type="button"
@@ -413,6 +466,13 @@ const Users = () => {
                     </p>
                   </div>
                   <div className="form-buttons">
+                    <button
+                      type="button"
+                      className="btn edit-btn"
+                      onClick={() => setEditing(true)}
+                    >
+                      Edit
+                    </button>
                     <button
                       type="button"
                       className="btn btn-close"

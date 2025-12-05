@@ -1,75 +1,116 @@
-.content {
-  margin-left: 260px;
-  padding: 20px;
+/* ---------------------------------------------------------
+   PAGE LAYOUT
+--------------------------------------------------------- */
+.page-container {
+  display: flex;
+  width: 100%;
+  height: 200vh;
+  font-family: 'Inter', sans-serif;
 }
 
-.page-header {
+.content {
+  flex: 1;
+  padding: 20px 30px;
+}
+
+/* ---------------------------------------------------------
+   PAGE HEADER
+--------------------------------------------------------- */
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* ---------------------------------------------------------
+   FILTERS ROW
+--------------------------------------------------------- */
+.filters-row {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
   align-items: center;
 }
 
-.page-header h1 {
-  font-size: 28px;
-  color: white;
-}
-
-.add-btn {
-  background: #003f7d;
-  color: white;
-  padding: 8px 16px;
+.filter-input,
+.filter-select {
+  padding: 8px 12px;
   border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
+  border: 1px solid #ccc;
+  min-width: 150px;
+  font-size: 14px;
 }
 
-.add-btn:hover {
-  background-color: #a00028;
+.filter-select {
+  background-color: #fff;
 }
 
+.btn.add-btn {
+  background: linear-gradient(90deg, #7a0019, #0054a6);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: 0.25s;
+  border: 2px solid black;
+}
+
+.btn.add-btn:hover {
+  background-color: #7a0019;
+  transform: translateY(-1px);
+}
+
+/* ---------------------------------------------------------
+   TABLE
+--------------------------------------------------------- */
 .table-container {
-  padding: 20px;
-  border-radius: 10px;
+  overflow-x: auto;
 }
 
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  color: rgb(0, 0, 0);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 .users-table th,
 .users-table td {
-  padding: 12px;
-
-}
-
-.users-table td {
-  max-width: 200px;       /* adjust based on layout */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 14px;
 }
 
 .users-table th {
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  font-weight: 600;
 }
 
-/* Optional: make tooltips a bit more visible on hover */
-.users-table td[title]:hover {
-  cursor: help;
+.users-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.users-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+.actions button {
+  margin-right: 5px;
 }
 
 .no-data {
   text-align: center;
-  padding: 20px;
-  color: #aaa;
+  font-style: italic;
+  color: #6b7280;
 }
 
+/* ---------------------------------------------------------
+   BUTTONS
+--------------------------------------------------------- */
 .actions .btn {
   margin-right: 6px;
   padding: 6px 10px;
@@ -96,7 +137,18 @@
   background-color: #a30000;
 }
 
-/* Modal */
+.btn.save-btn {
+  background-color: #10b981;
+  color: #fff;
+}
+
+.btn.save-btn:hover {
+  background-color: #059669;
+}
+
+/* ---------------------------------------------------------
+   MODAL
+--------------------------------------------------------- */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -105,136 +157,50 @@
   height: 100%;
   background-color: rgba(0,0,0,0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 200;
+  justify-content: center;
+  z-index: 2000;
 }
 
 .modal-card {
-  background-color: #26263b;
-  padding: 24px;
-  border-radius: 12px;
+  background-color: #fff;
+  border-radius: 10px;
   width: 450px;
   max-width: 90%;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  animation: fadeIn 0.2s ease-out;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  position: relative;
 }
 
 .modal-card h2 {
-  margin-bottom: 16px;
-  font-size: 1.5rem;
-  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
 }
 
 .edit-user-form label {
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 12px;
-  font-weight: 500;
+  font-size: 14px;
 }
 
 .edit-user-form input,
 .edit-user-form select {
-  width: 100%;
-  padding: 8px;
+  padding: 8px 10px;
   border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #1a1a2e;
-  color: white;
-  margin-top: 4px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  font-size: 14px;
 }
 
 .form-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 15px;
 }
 
-.save-btn,
-.btn-close {
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.save-btn {
-  background-color: #7a0019;
-}
-
-.save-btn:hover {
-  background-color: #a00028;
-}
-
-.btn-close {
-  background-color: #444;
-}
-
-.btn-close:hover {
-  background-color: #666;
-}
-.button-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Container for all filters / search fields */
-.filters-container {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 18px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* General search box */
-.search-box {
-  padding: 8px 12px;
-  border: 1px solid #d1d1d1;
-  border-radius: 6px;
+.user-details p {
   font-size: 14px;
-  outline: none;
-  transition: 0.2s;
-  background: #fff;
-  width: 220px;
-}
-
-.search-box:focus {
-  border-color: #8a2be2;
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
-}
-
-/* Dropdown style (for categories) */
-.filter-select {
-  padding: 8px 12px;
-  border: 1px solid #d1d1d1;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #fff;
-  cursor: pointer;
-  width: 180px;
-  transition: 0.2s;
-}
-
-.filter-select:focus {
-  border-color: #8a2be2;
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
-}
-
-/* Optional label styling */
-.filter-label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-right: 6px;
-}
-
-
-
-
-@keyframes fadeIn {
-  from {opacity: 0; transform: translateY(-10px);}
-  to {opacity: 1; transform: translateY(0);}
+  margin: 6px 0;
 }
