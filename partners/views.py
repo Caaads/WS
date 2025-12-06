@@ -438,28 +438,31 @@ def delete_user(request, pk):
 def update_user(request):
     user = request.user  # Current logged-in user
 
-    fullname = request.data.get("fullname")
-    email = request.data.get("email")
-    role = request.data.get("role")
-    college_id = request.data.get("college")
-    department_id = request.data.get("department")
+    # Update only the fields sent by the frontend
+    if "fullname" in request.data:
+        user.fullname = request.data["fullname"]
 
-    # Update user fields
-    user.fullname = fullname
-    user.email = email
-    user.role = role
+    if "email" in request.data:
+        user.email = request.data["email"]
 
-    # Handle college
-    if college_id:
-        user.college = get_object_or_404(College, id=college_id)
-    else:
-        user.college = None
+    if "role" in request.data:
+        user.role = request.data["role"]
 
-    # Handle department
-    if department_id:
-        user.department = get_object_or_404(Department, id=department_id)
-    else:
-        user.department = None
+    # Update college only if included
+    if "college" in request.data:
+        college_id = request.data.get("college")
+        if college_id:
+            user.college = get_object_or_404(College, id=college_id)
+        else:
+            user.college = None
+
+    # Update department only if included
+    if "department" in request.data:
+        department_id = request.data.get("department")
+        if department_id:
+            user.department = get_object_or_404(Department, id=department_id)
+        else:
+            user.department = None
 
     user.save()
 
@@ -471,6 +474,7 @@ def update_user(request):
         "college": user.college.id if user.college else None,
         "department": user.department.id if user.department else None
     })
+
 
 
 @login_required

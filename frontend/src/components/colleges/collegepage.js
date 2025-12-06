@@ -84,7 +84,8 @@ export default function CollegePage() {
   // College-specific CRUD permission
   const canEdit =
     user?.role === "superadmin" || // superadmin can edit all colleges
-    (user?.role === "college_admin" && user?.college === college.name); // college admin can edit only their college
+    (user?.role === "college_admin" && user?.college === college.name) || // college admin can edit only their college
+      (user?.role === "department_admin" && user?.college === college.name);
 
   return (
     <div className="page-container">

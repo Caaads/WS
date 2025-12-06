@@ -36,8 +36,6 @@ export default function SettingsModal({ open, onClose }) {
     try {
       const payload = { ...formData,
         role: userData.role,
-        college: userData.college,
-        department: userData.department
        };
       const res = await axiosInstance.put("/update_user/", payload);
       setUserData(res.data);
