@@ -96,6 +96,8 @@ def home(request):
 # =====================================================
 # CURRENT USER
 # =====================================================
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def current_user(request):
     if request.user.is_authenticated:
         return JsonResponse({

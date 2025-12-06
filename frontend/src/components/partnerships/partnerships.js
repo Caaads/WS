@@ -10,6 +10,11 @@ const Partnerships = () => {
   const [partners, setPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [showModal, setShowModal] = useState(false);
+const user = JSON.parse(localStorage.getItem("user")); 
+const adminRoles = ["superadmin"];
+const isAdmin = adminRoles.includes(user?.role);
+
+
 
   useEffect(() => {
     axiosInstance.get("/partners/")
@@ -55,17 +60,21 @@ const columns = [
     render: (row) => <span className={`status ${row.status.toLowerCase()}`}>{row.status}</span>,
   },
 
-  {
-    header: "Actions",
-    accessor: "actions",
-    render: (row) => (
-      <div className="actions">
-        <button className="action-btn view-btn" onClick={() => openModal(row)}>View</button>
-        <a href={`/edit-partnership/${row.id}`} className="action-btn edit-btn">Edit</a>
-        <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
-      </div>
-    ),
-  },
+{
+  header: "Actions",
+  accessor: "actions",
+  render: (row) => (
+    <div className="actions">
+      <button className="action-btn view-btn" onClick={() => openModal(row)}>View</button>
+      {isAdmin && (
+        <>
+          <a href={`/edit-partnership/${row.id}`} className="action-btn edit-btn">Edit</a>
+          <button onClick={() => handleDelete(row.id)} className="action-btn delete-btn">Delete</button>
+        </>
+      )}
+    </div>
+  ),
+},
 ];
 
 
@@ -78,9 +87,14 @@ const columns = [
           <h1>Partnerships</h1>
         </div>
 
-        <div className="btn-container">
-          <a href="/add-partnership" className="btn-add">+ Add Partnership</a>
-        </div>
+{isAdmin && (
+  <div className="btn-container">
+    <a href={`/add-partnership`} className="btn-add">
+      + Add Partnership
+    </a>
+  </div>
+)}
+
 
         <Table data={partners} columns={columns} />
 

@@ -108,16 +108,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="user")
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
-    # Email = username
     username = None
-
-    # For login access
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     # Request system
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-
     objects = UserManager()
 
     USERNAME_FIELD = "email"

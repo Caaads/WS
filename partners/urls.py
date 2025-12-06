@@ -75,6 +75,8 @@ urlpatterns = [
     path("contacts/", views.all_contacts, name="all_contacts"),
     path("contacts_by_partner/<int:partner_id>/", views.contacts_by_partner, name="contacts_by_partner"),
 
-    path("college/<int:pk>/", views.college_detail_api)
+    path("college/<int:pk>/", views.college_detail_api),
+
+    path("auth/me/", current_user, name="current-user"),
 
 ]
